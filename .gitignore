@@ -1,0 +1,9 @@
+**/bin/
+**/.project
+**/.classpath
+**/workspace
+**/.metadata
+**/.settings
+**/doc
+**/*.class
+**/*~
