@@ -1,2 +1,2 @@
 job1:
-	script: "cd Sources; mvn clean install site"
+   script: "cd Sources; mvn clean install site"
