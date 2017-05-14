@@ -1,7 +1,0 @@
-chat.client
-chat.client.algorithms
-chat.client.algorithms.chat
-chat.common
-chat.server
-chat.server.algorithms
-chat.server.algorithms.election
