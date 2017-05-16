@@ -486,8 +486,7 @@ public class Server {
 	 *            message as a serializable object.
 	 */
 	private void forwardServers(final SelectionKey exceptKey, final int type,
-			final int identity, final int seqNumber, final Serializable msg)
-			throws IOException {
+			final int identity, final int seqNumber, final Serializable msg) {
 		final Consumer<SelectionKey> send = key -> {
 			FullDuplexMsgWorker worker = Optional
 					.ofNullable(state.allServerWorkers.get(key))
@@ -524,8 +523,7 @@ public class Server {
 	 *            message as an serializable object.
 	 */
 	private void forwardClients(final SelectionKey exceptKey, final int type,
-			final int identity, final int seqNumber, final Serializable msg)
-			throws IOException {
+			final int identity, final int seqNumber, final Serializable msg) {
 		final Consumer<SelectionKey> send = (key) -> {
 			FullDuplexMsgWorker worker = Optional
 					.ofNullable(state.allClientWorkers.get(key))
