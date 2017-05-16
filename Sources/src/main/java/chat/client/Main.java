@@ -76,7 +76,9 @@ public final class Main {
 		while (!Thread.interrupted()) {
 			String consoleMsg = null;
 			consoleMsg = bufin.readLine();
-			client.treatConsoleInput(consoleMsg);
+			if (consoleMsg != null) {
+				client.treatConsoleInput(consoleMsg);
+			}
 		}
 	}
 }

@@ -139,11 +139,9 @@ public class Client {
 	 * as a chat message to the server.
 	 * 
 	 * @param line
-	 *            the content of the message
-	 * @throws IOException
-	 *             the exception thrown when the sending cannot be completed.
+	 *            the content of the message.
 	 */
-	public void treatConsoleInput(final String line) throws IOException {
+	public void treatConsoleInput(final String line) {
 		String input = Optional.ofNullable(line)
 				.orElseThrow(IllegalArgumentException::new);
 		if (LOG_ON && GEN.isDebugEnabled()) {
@@ -165,12 +163,18 @@ public class Client {
 			// there should exist a separate message type for chat messages from
 			// clients to their server and this new message type will not
 			// contain the sequence number.
-			long sent = runnableToRcvMsgs.sendMsg(
-					Algorithm.CHAT_MESSAGE.identifier(), state.identity, 0,
-					msg);
-			state.nbChatMessageContentSent++;
-			if (LOG_ON && COMM.isDebugEnabled()) {
-				COMM.debug(sent + " bytes sent.");
+			try {
+				long sent = runnableToRcvMsgs.sendMsg(
+						Algorithm.CHAT_MESSAGE.identifier(), state.identity, 0,
+						msg);
+				state.nbChatMessageContentSent++;
+				if (LOG_ON && COMM.isDebugEnabled()) {
+					COMM.debug(sent + " bytes sent.");
+				}
+			} catch (IOException e) {
+				COMM.warn(e.getLocalizedMessage());
+				e.printStackTrace();
+				return;
 			}
 		}
 	}
