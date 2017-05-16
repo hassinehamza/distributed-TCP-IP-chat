@@ -70,7 +70,7 @@ public class ReadMessagesFromNetwork implements Runnable {
 	/**
 	 * server socket channel for accepting client connections.
 	 */
-	public ServerSocketChannel listenChanClient;
+	private ServerSocketChannel listenChanClient;
 
 	/**
 	 * the selection key for accepting server connections.
@@ -80,7 +80,7 @@ public class ReadMessagesFromNetwork implements Runnable {
 	/**
 	 * server socket channel for accepting server connections.
 	 */
-	public ServerSocketChannel listenChanServer;
+	private ServerSocketChannel listenChanServer;
 
 	/**
 	 * state of the server object. This is where all the attributes of the chat
