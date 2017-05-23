@@ -22,7 +22,7 @@ Contributor(s):
 package chat.server.algorithms.election;
 
 import chat.common.AbstractContent;
-import chat.common.AbstractState;
+import chat.server.State;
 
 /**
  * This class defines the methods implementing the reaction of the state machine
@@ -48,7 +48,7 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message to treat.
 	 */
-	public static void receiveTokenContent(final AbstractState state,
+	public static void receiveTokenContent(final State state,
 			final AbstractContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
@@ -63,7 +63,7 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message to treat.
 	 */
-	public static void receiveLeaderContent(final AbstractState state,
+	public static void receiveLeaderContent(final State state,
 			final AbstractContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this

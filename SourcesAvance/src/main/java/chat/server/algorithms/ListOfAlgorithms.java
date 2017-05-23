@@ -52,7 +52,7 @@ public enum ListOfAlgorithms {
 	 * unmodifiable and the attribute is {@code final} so that no other
 	 * collection can be substituted after being statically assigned.
 	 */
-	private final Map<Integer, ? extends Action> mapOfActions;
+	private final Map<Integer, ? extends Action<State>> mapOfActions;
 
 	/**
 	 * index of the first message type of this algorithm.
@@ -65,7 +65,7 @@ public enum ListOfAlgorithms {
 	 * @param map
 	 *            collection of actions of this algorithm.
 	 */
-	ListOfAlgorithms(final Map<Integer, ? extends Action> map) {
+	ListOfAlgorithms(final Map<Integer, ? extends Action<State>> map) {
 		mapOfActions = Collections.unmodifiableMap(map);
 	}
 
@@ -74,7 +74,7 @@ public enum ListOfAlgorithms {
 	 * 
 	 * @return the map of actions.
 	 */
-	private Map<Integer, ? extends Action> getMapOfActions() {
+	private Map<Integer, ? extends Action<State>> getMapOfActions() {
 		return mapOfActions;
 	}
 

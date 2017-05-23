@@ -25,7 +25,6 @@ import java.util.Optional;
 
 import chat.client.State;
 import chat.common.AbstractContent;
-import chat.common.AbstractState;
 import chat.server.Server;
 
 /**
@@ -54,14 +53,13 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message.
 	 */
-	public static void receiveChatMessageContent(final AbstractState state,
+	public static void receiveChatMessageContent(final State state,
 			final AbstractContent content) {
 		ChatMessageContent msg = (ChatMessageContent) Optional
 				.ofNullable(content)
 				.filter(c -> c instanceof ChatMessageContent)
 				.orElseThrow(IllegalArgumentException::new);
-		State cstate = (State) Optional.ofNullable(state)
-				.filter(s -> s instanceof State)
+		State cstate = Optional.ofNullable(state)
 				.orElseThrow(IllegalArgumentException::new);
 		synchronized (cstate) {
 			cstate.nbChatMessageContentReceived++;

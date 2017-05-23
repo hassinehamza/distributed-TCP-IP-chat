@@ -28,7 +28,6 @@ import org.apache.log4j.Level;
 
 import chat.client.State;
 import chat.common.AbstractContent;
-import chat.common.AbstractState;
 import chat.server.Server;
 
 /**
@@ -57,9 +56,8 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message.
 	 */
-	public static void receiveChatMessageContent(final AbstractState state,
+	public static void receiveChatMessageContent(final State state,
 			final AbstractContent content) {
-		State cstate = null;
 		if (content == null) {
 			throw new IllegalArgumentException(
 					"Try executing action with null content");
@@ -68,22 +66,14 @@ public final class Actions {
 			throw new IllegalArgumentException(
 					"Try executing action with null state");
 		}
-		if (state instanceof State) {
-			cstate = (State) state;
-		} else {
-			throw new IllegalArgumentException(
-					"Try executing action with state of wrong type ("
-							+ state.getClass().getName()
-							+ " instead of ChatClientState");
-		}
 		if (content instanceof ChatMessageContent) {
 			ChatMessageContent mymsg = (ChatMessageContent) content;
-			synchronized (cstate) {
-				cstate.nbChatMessageContentReceived++;
+			synchronized (state) {
+				state.nbChatMessageContentReceived++;
 				System.out.println(
-						"client " + cstate.identity % Server.OFFSET_ID_CLIENT
+						"client " + state.identity % Server.OFFSET_ID_CLIENT
 								+ " of server "
-								+ cstate.identity / Server.OFFSET_ID_CLIENT
+								+ state.identity / Server.OFFSET_ID_CLIENT
 								+ " receives " + mymsg);
 			}
 		} else {

@@ -25,8 +25,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import chat.client.State;
 import chat.common.AbstractContent;
-import chat.common.AbstractState;
 import chat.common.Action;
 
 /**
@@ -36,7 +36,7 @@ import chat.common.Action;
  * @author Denis Conan
  * 
  */
-public enum Algorithm implements Action {
+public enum Algorithm implements Action<State> {
 	/**
 	 * the enumerator for the action of the chat message of the chat algorithm.
 	 */
@@ -49,7 +49,7 @@ public enum Algorithm implements Action {
 		 * @param content
 		 *            the message to treat.
 		 */
-		public void execute(final AbstractState state,
+		public void execute(final State state,
 				final AbstractContent content) {
 			Actions.receiveChatMessageContent(state, content);
 		}

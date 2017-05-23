@@ -21,6 +21,9 @@ Contributor(s):
  */
 package chat.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This interface defines the interface of the actions of the algorithms of the
  * client or the server. An action has an identifier and is obtained with the
@@ -31,10 +34,13 @@ package chat.common;
  * are the state of the entity (client or server) and the message that has just
  * been received.
  * 
+ * @param <S>
+ *            the type of the state on which the action is executed.
+ * 
  * @author Denis Conan
  * 
  */
-public interface Action {
+public interface Action<S extends AbstractState> {
 	/**
 	 * gets the identifier (integer) of the action, which can be attached to a
 	 * message dispatcher.
@@ -42,7 +48,7 @@ public interface Action {
 	 * @return the identifier of the action.
 	 */
 	int identifier();
-	
+
 	/**
 	 * index of the first message type of the first algorithm of the server.
 	 */
@@ -61,34 +67,29 @@ public interface Action {
 	 * @param msg
 	 *            the message in treatment.
 	 */
-	void execute(AbstractState state, AbstractContent msg);
-
-	/**
-	 * states whether some non-determinism is introduced to test distributed
-	 * algorithms. This is done by rerouting in the default method
-	 * {@link #executeOrIntercept(AbstractState, AbstractContent)}.
-	 */
-	boolean INTERCEPTION_ON = false;
+	void execute(S state, AbstractContent msg);
 
 	/**
 	 * executes the action due to the receipt of the message {@code msg} or
 	 * intercepts the call of the action for instance to eventually re-schedule
 	 * the receipt of the message so that some non-determinism is introduced.
-	 * The behavior is controlled by the boolean value {@link #INTERCEPTION_ON}.
+	 * The behavior is controlled by the boolean value
+	 * {@link Interceptor#isInterceptionEnabled()}.
 	 * 
 	 * @param state
 	 *            the current state of the entity that receives the message.
 	 * @param msg
 	 *            the message to treat.
 	 */
-	default void executeOrIntercept(AbstractState state, AbstractContent msg) {
-		if (INTERCEPTION_ON) {
-			if (Log.LOG_ON && Log.COMM.isDebugEnabled()) {
-				Log.COMM.debug("message intercepted");
-			}
-			Interceptor.intercept(state, msg);
+	default void executeOrIntercept(final S state, final AbstractContent msg) {
+		List<AbstractContent> set = new ArrayList<>();
+		if (Interceptor.isInterceptionEnabled()) {
+			set = Interceptor.intercept(state, msg);
 		} else {
-			execute(state, msg);
+			set.add(msg);
+		}
+		for (AbstractContent m : set) {
+			execute(state, m);
 		}
 	}
 }

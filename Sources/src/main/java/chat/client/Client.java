@@ -152,25 +152,26 @@ public class Client {
 		if (line.equals("quit")) {
 			threadToRcvMsgs.interrupt();
 			Thread.currentThread().interrupt();
-			return;
 		} else {
-			ChatMessageContent msg = new ChatMessageContent(state.identity,
-					line);
-			if (LOG_ON && COMM.isTraceEnabled()) {
-				COMM.trace("sending chat message: " + msg);
-			}
-			// The sequence number is irrelevant (assigned to 0) for client
-			// messages sent to the server, but will be assigned by the
-			// server to control the propagation of client messages. Ideally,
-			// there should exist a separate message type for chat messages from
-			// clients to their server and this new message type will not
-			// contain the sequence number.
-			long sent = runnableToRcvMsgs.sendMsg(
-					Algorithm.CHAT_MESSAGE.identifier(), state.identity, 0,
-					msg);
-			state.nbChatMessageContentSent++;
-			if (LOG_ON && COMM.isDebugEnabled()) {
-				COMM.debug(sent + " bytes sent.");
+			synchronized (state) {
+				ChatMessageContent msg = new ChatMessageContent(state.identity,
+						line);
+				if (LOG_ON && COMM.isTraceEnabled()) {
+					COMM.trace("sending chat message: " + msg);
+				}
+				// The sequence number is irrelevant (assigned to 0) for client
+				// messages sent to the server, but will be assigned by the
+				// server to control the propagation of client messages.
+				// Ideally, there should exist a separate message type for chat
+				// messages from clients to their server and this new message
+				// type will not contain the sequence number.
+				long sent = runnableToRcvMsgs.sendMsg(
+						Algorithm.CHAT_MESSAGE.identifier(), state.identity, 0,
+						msg);
+				state.nbChatMessageContentSent++;
+				if (LOG_ON && COMM.isDebugEnabled()) {
+					COMM.debug(sent + " bytes sent.");
+				}
 			}
 		}
 	}

@@ -260,10 +260,12 @@ public class Server {
 		worker.configureNonBlocking();
 		SelectionKey serverKey = rwChan.register(selector,
 				SelectionKey.OP_READ);
-		state.allServerWorkers.put(serverKey, worker);
-		if (LOG_ON && COMM.isDebugEnabled()) {
-			COMM.debug("allServerWorkers.size() = "
-					+ state.allServerWorkers.size());
+		synchronized (state) {
+			state.allServerWorkers.put(serverKey, worker);
+			if (LOG_ON && COMM.isDebugEnabled()) {
+				COMM.debug("allServerWorkers.size() = "
+						+ state.allServerWorkers.size());
+			}
 		}
 	}
 
@@ -287,11 +289,12 @@ public class Server {
 				FullDuplexMsgWorker worker = new FullDuplexMsgWorker(rwChan);
 				worker.configureNonBlocking();
 				newKey = rwChan.register(selector, SelectionKey.OP_READ);
-				// servers.put(newKey, rwChan);
-				state.allServerWorkers.put(newKey, worker);
-				if (LOG_ON && COMM.isDebugEnabled()) {
-					COMM.debug("allServerWorkers.size() = "
-							+ state.allServerWorkers.size());
+				synchronized (state) {
+					state.allServerWorkers.put(newKey, worker);
+					if (LOG_ON && COMM.isDebugEnabled()) {
+						COMM.debug("allServerWorkers.size() = "
+								+ state.allServerWorkers.size());
+					}
 				}
 			} catch (ClosedChannelException e) {
 				COMM.error(e.getLocalizedMessage());
@@ -326,11 +329,14 @@ public class Server {
 				FullDuplexMsgWorker worker = new FullDuplexMsgWorker(rwChan);
 				worker.configureNonBlocking();
 				newKey = rwChan.register(selector, SelectionKey.OP_READ);
-				state.allClientWorkers.put(newKey, worker);
-				worker.sendMsg(0, state.getIdentity(), state.seqNumber,
-						Integer.valueOf(state.getIdentity() * OFFSET_ID_CLIENT
-								+ clientNumber));
-				clientNumber++;
+				synchronized (state) {
+					state.allClientWorkers.put(newKey, worker);
+					worker.sendMsg(0, state.getIdentity(), state.seqNumber,
+							Integer.valueOf(
+									state.getIdentity() * OFFSET_ID_CLIENT
+											+ clientNumber));
+					clientNumber++;
+				}
 			} catch (ClosedChannelException e) {
 				COMM.error(e.getLocalizedMessage());
 				e.printStackTrace();
@@ -357,9 +363,11 @@ public class Server {
 	 */
 	public void sendToAllServers(final int type, final int identity,
 			final int seqNumber, final Serializable msg) throws IOException {
-		state.seqNumber++;
-		// send to all the servers, thus first argument is null
-		forwardServers(null, type, identity, seqNumber, msg);
+		synchronized (state) {
+			state.seqNumber++;
+			// send to all the servers, thus first argument is null
+			forwardServers(null, type, identity, seqNumber, msg);
+		}
 	}
 
 	/**
@@ -384,12 +392,15 @@ public class Server {
 	public void sendToAServer(final SelectionKey targetKey, final int type,
 			final int identity, final int seqNumber, final Serializable mgg)
 			throws IOException {
-		state.seqNumber++;
-		FullDuplexMsgWorker sendWorker = state.allServerWorkers.get(targetKey);
-		if (sendWorker == null) {
-			COMM.warn("Bad receiver for server key " + targetKey);
-		} else {
-			sendWorker.sendMsg(type, identity, seqNumber, mgg);
+		synchronized (state) {
+			state.seqNumber++;
+			FullDuplexMsgWorker sendWorker = state.allServerWorkers
+					.get(targetKey);
+			if (sendWorker == null) {
+				COMM.warn("Bad receiver for server key " + targetKey);
+			} else {
+				sendWorker.sendMsg(type, identity, seqNumber, mgg);
+			}
 		}
 		if (LOG_ON && COMM.isInfoEnabled()) {
 			COMM.info("Send message of type " + type + " to server of identity "
@@ -419,8 +430,10 @@ public class Server {
 	public void sendToAllServersExceptOne(final SelectionKey exceptKey,
 			final int type, final int identity, final int seqNumber,
 			final Serializable s) throws IOException {
-		state.seqNumber++;
-		forwardServers(exceptKey, type, identity, seqNumber, s);
+		synchronized (state) {
+			state.seqNumber++;
+			forwardServers(exceptKey, type, identity, seqNumber, s);
+		}
 	}
 
 	/**
@@ -472,20 +485,22 @@ public class Server {
 			final int identity, final int seqNumber, final Serializable msg)
 			throws IOException {
 		int nbServers = 0;
-		for (SelectionKey target : state.allServerWorkers.keySet()) {
-			if (target == exceptKey) {
-				if (LOG_ON && COMM.isDebugEnabled()) {
-					COMM.debug("do not send to a server "
-							+ "because (target == exceptKey)");
+		synchronized (state) {
+			for (SelectionKey target : state.allServerWorkers.keySet()) {
+				if (target == exceptKey) {
+					if (LOG_ON && COMM.isDebugEnabled()) {
+						COMM.debug("do not send to a server "
+								+ "because (target == exceptKey)");
+					}
+					continue;
 				}
-				continue;
-			}
-			FullDuplexMsgWorker worker = state.allServerWorkers.get(target);
-			if (worker == null) {
-				COMM.warn("Bad worker for server key " + target);
-			} else {
-				worker.sendMsg(type, identity, seqNumber, msg);
-				nbServers++;
+				FullDuplexMsgWorker worker = state.allServerWorkers.get(target);
+				if (worker == null) {
+					COMM.warn("Bad worker for server key " + target);
+				} else {
+					worker.sendMsg(type, identity, seqNumber, msg);
+					nbServers++;
+				}
 			}
 		}
 		if (LOG_ON && COMM.isInfoEnabled()) {
@@ -516,21 +531,23 @@ public class Server {
 			final int identity, final int seqNumber, final Serializable msg)
 			throws IOException {
 		int nbClients = 0;
-		for (SelectionKey target : state.allClientWorkers.keySet()) {
-			if (target == exceptKey) {
-				if (LOG_ON && COMM.isDebugEnabled()) {
-					COMM.debug("do not send to a client "
-							+ "because (target == exceptKey)");
+		synchronized (state) {
+			for (SelectionKey target : state.allClientWorkers.keySet()) {
+				if (target == exceptKey) {
+					if (LOG_ON && COMM.isDebugEnabled()) {
+						COMM.debug("do not send to a client "
+								+ "because (target == exceptKey)");
+					}
+					continue;
 				}
-				continue;
-			}
-			FullDuplexMsgWorker clientWorker = state.allClientWorkers
-					.get(target);
-			if (clientWorker == null) {
-				COMM.warn("Bad receiver for key " + target);
-			} else {
-				clientWorker.sendMsg(type, identity, seqNumber, msg);
-				nbClients++;
+				FullDuplexMsgWorker clientWorker = state.allClientWorkers
+						.get(target);
+				if (clientWorker == null) {
+					COMM.warn("Bad receiver for key " + target);
+				} else {
+					clientWorker.sendMsg(type, identity, seqNumber, msg);
+					nbClients++;
+				}
 			}
 		}
 		if (LOG_ON && COMM.isInfoEnabled()) {

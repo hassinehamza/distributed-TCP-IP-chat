@@ -109,8 +109,8 @@ public class ReadMessagesFromNetwork implements Runnable {
 	 *            the reference to the state objec of the server where all the
 	 *            attributes are stored.
 	 */
-	public ReadMessagesFromNetwork(final Server server,
-			final Selector selector, final SelectionKey acceptClientKey,
+	public ReadMessagesFromNetwork(final Server server, final Selector selector,
+			final SelectionKey acceptClientKey,
 			final ServerSocketChannel listenChanClient,
 			final SelectionKey acceptServerKey,
 			final ServerSocketChannel listenChanServer, final State state) {
@@ -162,16 +162,8 @@ public class ReadMessagesFromNetwork implements Runnable {
 					try {
 						if (key.equals(acceptServerKey)) {
 							server.acceptNewServer(listenChanServer);
-							if (LOG_ON && COMM.isDebugEnabled()) {
-								COMM.debug("allServerWorkers.size() = "
-										+ state.allServerWorkers.size());
-							}
 						} else if (key.equals(acceptClientKey)) {
 							server.acceptNewClient(listenChanClient);
-							if (LOG_ON && COMM.isDebugEnabled()) {
-								COMM.debug("allClientWorkers.size() = "
-										+ state.allClientWorkers.size());
-							}
 						} else {
 							COMM.fatal("unknown accept");
 							return;
@@ -182,14 +174,18 @@ public class ReadMessagesFromNetwork implements Runnable {
 					}
 				}
 				if (key.isReadable()) {
-					state.currKey = key;
-					FullDuplexMsgWorker serverWorker = state.allServerWorkers
-							.get(key);
+					FullDuplexMsgWorker serverWorker = null;
+					synchronized (state) {
+						state.currKey = key;
+						serverWorker = state.allServerWorkers.get(key);
+					}
 					if (serverWorker != null) {
 						treatMessageFromNeighbouringServer(key, serverWorker);
 					}
-					FullDuplexMsgWorker clientWorker = state.allClientWorkers
-							.get(key);
+					FullDuplexMsgWorker clientWorker = null;
+					synchronized (state) {
+						clientWorker = state.allClientWorkers.get(key);
+					}
 					if (clientWorker != null) {
 						treatMessageFromLocalClient(key, clientWorker);
 					}
@@ -215,11 +211,13 @@ public class ReadMessagesFromNetwork implements Runnable {
 			if (status == ReadMessageStatus.ChannelClosed) {
 				// remote end point has been closed
 				readWorker.close();
-				state.allServerWorkers.remove(key);
-				if (LOG_ON && COMM.isInfoEnabled()) {
-					COMM.info("Closing a channel");
-					COMM.debug("  allServerWorkers.size() = "
-							+ state.allServerWorkers.size());
+				synchronized (state) {
+					state.allServerWorkers.remove(key);
+					if (LOG_ON && COMM.isInfoEnabled()) {
+						COMM.info("Closing a channel");
+						COMM.debug("  allServerWorkers.size() = "
+								+ state.allServerWorkers.size());
+					}
 				}
 			}
 			if (status == ReadMessageStatus.ReadDataCompleted) {
@@ -242,15 +240,19 @@ public class ReadMessagesFromNetwork implements Runnable {
 					// client message to forward
 					int identity = readWorker.getInIdentity();
 					int seqNumber = readWorker.getInSeqNumber();
-					if (state.clientSeqNumbers.get(identity) == null) {
-						state.clientSeqNumbers.put(identity, seqNumber);
-						server.forward(key, messType, identity, seqNumber, msg);
-					} else {
-						if (seqNumber > state.clientSeqNumbers.get(identity)) {
-							// not already forwarded
+					synchronized (state) {
+						if (state.clientSeqNumbers.get(identity) == null) {
 							state.clientSeqNumbers.put(identity, seqNumber);
 							server.forward(key, messType, identity, seqNumber,
 									msg);
+						} else {
+							if (seqNumber > state.clientSeqNumbers
+									.get(identity)) {
+								// not already forwarded
+								state.clientSeqNumbers.put(identity, seqNumber);
+								server.forward(key, messType, identity,
+										seqNumber, msg);
+							}
 						}
 					}
 				}
@@ -275,11 +277,13 @@ public class ReadMessagesFromNetwork implements Runnable {
 			status = readWorker.readMessage();
 			if (status == ReadMessageStatus.ChannelClosed) {
 				readWorker.close();
-				state.allClientWorkers.remove(key);
-				if (LOG_ON && COMM.isInfoEnabled()) {
-					COMM.info("Closing a channel");
-					COMM.debug("  allClientWorkers.size() = "
-							+ state.allClientWorkers.size());
+				synchronized (state) {
+					state.allClientWorkers.remove(key);
+					if (LOG_ON && COMM.isInfoEnabled()) {
+						COMM.info("Closing a channel");
+						COMM.debug("  allClientWorkers.size() = "
+								+ state.allClientWorkers.size());
+					}
 				}
 			}
 			if (status == ReadMessageStatus.ReadDataCompleted) {
@@ -290,9 +294,11 @@ public class ReadMessagesFromNetwork implements Runnable {
 							+ msg.getClass().getName());
 				}
 				int identity = readWorker.getInIdentity();
-				int seqNumber = state.seqNumber++;
-				state.clientSeqNumbers.put(identity, seqNumber);
-				server.forward(key, messType, identity, seqNumber, msg);
+				synchronized (state) {
+					int seqNumber = state.seqNumber++;
+					state.clientSeqNumbers.put(identity, seqNumber);
+					server.forward(key, messType, identity, seqNumber, msg);
+				}
 			}
 		} catch (IOException e) {
 			COMM.error(e.getStackTrace());
