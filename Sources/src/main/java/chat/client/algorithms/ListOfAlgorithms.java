@@ -27,7 +27,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import chat.client.State;
-import chat.common.AbstractContent;
 import chat.common.Action;
 
 /**
@@ -90,15 +89,17 @@ public enum ListOfAlgorithms {
 				Action<State> action = actions.next();
 				if (action.identifier() == actionIndex) {
 					executed = true;
-					AbstractContent c;
-					if (content instanceof AbstractContent) {
-						c = (AbstractContent) content;
+					if (action.contentClass().isInstance(content)
+							&& state != null) {
+						action.executeOrIntercept(state,
+								action.contentClass().cast(content));
 					} else {
 						throw new IllegalArgumentException(
-								"The content is not of type AbstractContent: "
-										+ content.getClass().getName());
+								"The content is not of the right type ("
+										+ content + "/" + action.contentClass()
+										+ ") or the state is null (" + state
+										+ ")");
 					}
-					action.executeOrIntercept(state, c);
 				}
 			}
 		}

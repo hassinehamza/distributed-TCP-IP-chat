@@ -21,13 +21,7 @@ Contributor(s):
  */
 package chat.client.algorithms.chat;
 
-import static chat.common.Log.CHAT;
-import static chat.common.Log.LOG_ON;
-
-import org.apache.log4j.Level;
-
 import chat.client.State;
-import chat.common.AbstractContent;
 import chat.server.Server;
 
 /**
@@ -57,34 +51,13 @@ public final class Actions {
 	 *            the content of the message.
 	 */
 	public static void receiveChatMessageContent(final State state,
-			final AbstractContent content) {
-		if (content == null) {
-			throw new IllegalArgumentException(
-					"Try executing action with null content");
-		}
-		if (state == null) {
-			throw new IllegalArgumentException(
-					"Try executing action with null state");
-		}
-		if (content instanceof ChatMessageContent) {
-			ChatMessageContent mymsg = (ChatMessageContent) content;
-			synchronized (state) {
-				state.nbChatMessageContentReceived++;
-				System.out.println(
-						"client " + state.identity % Server.OFFSET_ID_CLIENT
-								+ " of server "
-								+ state.identity / Server.OFFSET_ID_CLIENT
-								+ " receives " + mymsg);
-			}
-		} else {
-			if (LOG_ON && CHAT.isEnabledFor(Level.ERROR)) {
-				CHAT.error(
-						"Error when executing action: not right message type ("
-								+ content.getClass().getName() + ")");
-			}
-			throw new IllegalArgumentException(
-					"Error when executing action: not right message type ("
-							+ content.getClass().getName() + ")");
+			final ChatMessageContent content) {
+		synchronized (state) {
+			state.nbChatMessageContentReceived++;
+			System.out.println("client "
+					+ state.identity % Server.OFFSET_ID_CLIENT + " of server "
+					+ state.identity / Server.OFFSET_ID_CLIENT + " receives "
+					+ content);
 		}
 	}
 }

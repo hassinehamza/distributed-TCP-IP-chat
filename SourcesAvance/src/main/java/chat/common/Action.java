@@ -60,6 +60,13 @@ public interface Action<S extends AbstractState> {
 	int OFFSET_CLIENT_ALGORITHMS = 1000;
 
 	/**
+	 * gets the type of the content/message to be treated.
+	 * 
+	 * @return the type of the content/message.
+	 */
+	Class<? extends AbstractContent> contentClass();
+
+	/**
 	 * executes the algorithmic part corresponding to this action.
 	 * 
 	 * @param state

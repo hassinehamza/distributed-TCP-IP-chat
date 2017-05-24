@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import chat.client.State;
-import chat.common.AbstractContent;
 import chat.common.Action;
 
 /**
@@ -93,8 +92,8 @@ public enum ListOfAlgorithms {
 			final Object content) {
 		Arrays.asList(values()).stream().map(ListOfAlgorithms::getMapOfActions)
 				.map(map -> map.get(actionIndex))
-				.filter(action -> content instanceof AbstractContent)
+				.filter(action -> action.contentClass().isInstance(content))
 				.forEach(action -> action.executeOrIntercept(state,
-						(AbstractContent) content));
+						action.contentClass().cast(content)));
 	}
 }

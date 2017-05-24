@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
-import chat.common.AbstractContent;
 import chat.common.Action;
 import chat.server.State;
 
@@ -93,11 +92,11 @@ public enum ListOfAlgorithms {
 			final Object content) {
 		Arrays.asList(values()).stream().map(ListOfAlgorithms::getMapOfActions)
 				.map(map -> map.get(actionIndex))
-				.filter(action -> content instanceof AbstractContent)
+				.filter(action -> action.contentClass().isInstance(content))
 				.forEach(action -> action.executeOrIntercept(
-						Optional.ofNullable(state)
-								.orElseThrow(IllegalArgumentException::new),
-						(AbstractContent) content));
+						Optional.ofNullable(state).orElseThrow(
+								IllegalArgumentException::new),
+						action.contentClass().cast(content)));
 		synchronized (state) {
 			state.currKey = Optional.empty();
 		}

@@ -21,7 +21,6 @@ Contributor(s):
  */
 package chat.server.algorithms.election;
 
-import chat.common.AbstractContent;
 import chat.server.State;
 
 /**
@@ -49,7 +48,7 @@ public final class Actions {
 	 *            the content of the message to treat.
 	 */
 	public static void receiveTokenContent(final State state,
-			final AbstractContent content) {
+			final ElectionTokenContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
@@ -64,7 +63,7 @@ public final class Actions {
 	 *            the content of the message to treat.
 	 */
 	public static void receiveLeaderContent(final State state,
-			final AbstractContent content) {
+			final ElectionLeaderContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!

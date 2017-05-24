@@ -41,7 +41,7 @@ public enum Algorithm implements Action<State> {
 	/**
 	 * the enumerator for the action of the chat message of the chat algorithm.
 	 */
-	CHAT_MESSAGE() {
+	CHAT_MESSAGE(ChatMessageContent.class) {
 		/**
 		 * executes the action by calling a static method.
 		 * 
@@ -50,9 +50,9 @@ public enum Algorithm implements Action<State> {
 		 * @param content
 		 *            the message to treat.
 		 */
-		public void execute(final State state,
-				final AbstractContent content) {
-			Actions.receiveChatMessageContent(state, content);
+		public void execute(final State state, final AbstractContent content) {
+			Actions.receiveChatMessageContent(state,
+					(ChatMessageContent) content);
 		}
 	};
 
@@ -72,6 +72,11 @@ public enum Algorithm implements Action<State> {
 	private final int actionIndex;
 
 	/**
+	 * the type of the content.
+	 */
+	private final Class<? extends AbstractContent> contentClass;
+
+	/**
 	 * static block to build the collection attributes when loading the
 	 * enumeration in the VM. A modifiable list is built and transformed into an
 	 * unmodifiable one.
@@ -85,11 +90,15 @@ public enum Algorithm implements Action<State> {
 
 	/**
 	 * constructs an enumerator by assigning the {@link actionIndex}.
+	 * 
+	 * @param contentClass
+	 *            the type of the content.
 	 */
-	Algorithm() {
+	Algorithm(final Class<? extends AbstractContent> contentClass) {
 		this.actionIndex = chat.common.Action.OFFSET_CLIENT_ALGORITHMS
 				+ chat.client.algorithms.ListOfAlgorithms.OFFSET_CHAT_ALGORITHM
 				+ ordinal();
+		this.contentClass = contentClass;
 	}
 
 	/**
@@ -99,6 +108,15 @@ public enum Algorithm implements Action<State> {
 	 */
 	public int identifier() {
 		return actionIndex;
+	}
+
+	/**
+	 * gets the type of the content.
+	 * 
+	 * @return the type of the content.
+	 */
+	public Class<? extends AbstractContent> contentClass() {
+		return contentClass;
 	}
 
 	@Override
