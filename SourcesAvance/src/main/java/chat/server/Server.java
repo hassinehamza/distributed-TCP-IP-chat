@@ -263,10 +263,12 @@ public class Server {
 		worker.configureNonBlocking();
 		SelectionKey serverKey = rwChan.register(selector,
 				SelectionKey.OP_READ);
-		state.allServerWorkers.put(serverKey, worker);
-		if (LOG_ON && COMM.isDebugEnabled()) {
-			COMM.debug("allServerWorkers.size() = "
-					+ state.allServerWorkers.size());
+		synchronized (state) {
+			state.allServerWorkers.put(serverKey, worker);
+			if (LOG_ON && COMM.isDebugEnabled()) {
+				COMM.debug("allServerWorkers.size() = "
+						+ state.allServerWorkers.size());
+			}
 		}
 	}
 
@@ -296,10 +298,12 @@ public class Server {
 			worker.configureNonBlocking();
 			SelectionKey newKey = rwChan.register(selector,
 					SelectionKey.OP_READ);
-			state.allServerWorkers.put(newKey, worker);
-			if (LOG_ON && COMM.isDebugEnabled()) {
-				COMM.debug("allServerWorkers.size() = "
-						+ state.allServerWorkers.size());
+			synchronized (state) {
+				state.allServerWorkers.put(newKey, worker);
+				if (LOG_ON && COMM.isDebugEnabled()) {
+					COMM.debug("allServerWorkers.size() = "
+							+ state.allServerWorkers.size());
+				}
 			}
 		} catch (IOException e) {
 			COMM.error(e.getLocalizedMessage());
@@ -339,10 +343,12 @@ public class Server {
 			worker.configureNonBlocking();
 			SelectionKey newKey = rwChan.register(selector,
 					SelectionKey.OP_READ);
-			state.allClientWorkers.put(newKey, worker);
-			worker.sendMsg(0, state.getIdentity(), state.seqNumber,
-					Integer.valueOf(state.getIdentity() * OFFSET_ID_CLIENT
-							+ clientNumber));
+			synchronized (state) {
+				state.allClientWorkers.put(newKey, worker);
+				worker.sendMsg(0, state.getIdentity(), state.seqNumber,
+						Integer.valueOf(state.getIdentity() * OFFSET_ID_CLIENT
+								+ clientNumber));
+			}
 			clientNumber++;
 		} catch (IOException e) {
 			COMM.error(e.getLocalizedMessage());
@@ -369,10 +375,13 @@ public class Server {
 	 */
 	public void sendToAllServers(final int type, final int identity,
 			final int seqNumber, final Serializable msg) throws IOException {
-		state.seqNumber++;
-		// send to all the servers, thus first argument is null
-		forwardServers(null, type, identity, seqNumber, Optional.ofNullable(msg)
-				.orElseThrow(IllegalArgumentException::new));
+		synchronized (state) {
+			state.seqNumber++;
+			// send to all the servers, thus first argument is null
+			forwardServers(null, type, identity, seqNumber,
+					Optional.ofNullable(msg)
+							.orElseThrow(IllegalArgumentException::new));
+		}
 	}
 
 	/**
@@ -397,22 +406,25 @@ public class Server {
 	public void sendToAServer(final SelectionKey targetKey, final int type,
 			final int identity, final int seqNumber, final Serializable msg)
 			throws IOException {
-		FullDuplexMsgWorker worker = Optional
-				.ofNullable(state.allServerWorkers
-						.get(Optional.ofNullable(targetKey)
-								.orElseThrow(IllegalArgumentException::new)))
-				.orElseThrow(IllegalStateException::new);
-		try {
-			worker.sendMsg(type, identity, seqNumber, Optional.ofNullable(msg)
-					.orElseThrow(IllegalArgumentException::new));
-			state.seqNumber++;
-			if (LOG_ON && COMM.isInfoEnabled()) {
-				COMM.info("Send message of type " + type
-						+ " to server of identity " + identity);
+		synchronized (state) {
+			FullDuplexMsgWorker worker = Optional
+					.ofNullable(state.allServerWorkers
+							.get(Optional.ofNullable(targetKey).orElseThrow(
+									IllegalArgumentException::new)))
+					.orElseThrow(IllegalStateException::new);
+			try {
+				worker.sendMsg(type, identity, seqNumber,
+						Optional.ofNullable(msg)
+								.orElseThrow(IllegalArgumentException::new));
+				state.seqNumber++;
+				if (LOG_ON && COMM.isInfoEnabled()) {
+					COMM.info("Send message of type " + type
+							+ " to server of identity " + identity);
+				}
+			} catch (IOException e) {
+				COMM.error(e.getLocalizedMessage());
+				e.printStackTrace();
 			}
-		} catch (IOException e) {
-			COMM.error(e.getLocalizedMessage());
-			e.printStackTrace();
 		}
 	}
 
@@ -438,8 +450,10 @@ public class Server {
 	public void sendToAllServersExceptOne(final SelectionKey exceptKey,
 			final int type, final int identity, final int seqNumber,
 			final Serializable s) throws IOException {
-		forwardServers(exceptKey, type, identity, seqNumber, s);
-		state.seqNumber++;
+		synchronized (state) {
+			forwardServers(exceptKey, type, identity, seqNumber, s);
+			state.seqNumber++;
+		}
 	}
 
 	/**
@@ -501,8 +515,10 @@ public class Server {
 				e.printStackTrace();
 			}
 		};
-		state.allServerWorkers.keySet().stream().filter(key -> key != exceptKey)
-				.forEach(send);
+		synchronized (state) {
+			state.allServerWorkers.keySet().stream()
+					.filter(key -> key != exceptKey).forEach(send);
+		}
 	}
 
 	/**
@@ -541,7 +557,9 @@ public class Server {
 				e.printStackTrace();
 			}
 		};
-		state.allClientWorkers.keySet().stream().filter(key -> key != exceptKey)
-				.forEach(send);
+		synchronized (state) {
+			state.allClientWorkers.keySet().stream()
+					.filter(key -> key != exceptKey).forEach(send);
+		}
 	}
 }

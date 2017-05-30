@@ -21,10 +21,13 @@ Contributor(s):
  */
 package chat.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * This class contains the interception of the calls to the actions to receive
  * messages in the client. The behaviour is controlled by the boolean constant
- * {@link chat.common.Action#INTERCEPTION_ON}. When set, the default method
+ * {@link interceptionEnabled}. When set, the default method
  * {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
  * redirects the receipt of the message to the method
  * {@link #intercept(AbstractState, AbstractContent)}.
@@ -32,10 +35,44 @@ package chat.common;
  * @author Denis Conan
  */
 public final class Interceptor {
+
+	/**
+	 * states whether some non-determinism is introduced to test distributed
+	 * algorithms. This is done by rerouting in the default method
+	 * {@link Action#executeOrIntercept(AbstractState, AbstractContent)}.
+	 */
+	private static boolean interceptionEnabled = false;
+
+	/**
+	 * number of milliseconds for delaying messages.
+	 */
+	@SuppressWarnings("unused")
+	private static final int DELAY = 500;
+
 	/**
 	 * private constructor to avoid instantiation.
 	 */
 	private Interceptor() {
+	}
+
+	/**
+	 * gets the boolean value of the attribute {@link #interceptionEnabled}.
+	 * 
+	 * @return the boolean value.
+	 */
+	public static boolean isInterceptionEnabled() {
+		return interceptionEnabled;
+	}
+
+	/**
+	 * sets the boolean value of the attribute {@link #interceptionEnabled}.
+	 * 
+	 * @param interceptionEnabled
+	 *            the new boolean value.
+	 */
+	public static void setInterceptionEnabled(
+			final boolean interceptionEnabled) {
+		Interceptor.interceptionEnabled = interceptionEnabled;
 	}
 
 	/**
@@ -44,18 +81,19 @@ public final class Interceptor {
 	 * This method is called by the default method
 	 * {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
 	 * when the interception mechanism is activated, that is
-	 * {@link chat.common.Action#INTERCEPTION_ON} is {@code true}.
-	 * 
-	 * TODO this is where to program for instance non-FIFO communication,
-	 * message loss, etc.
+	 * {@link #isInterceptionEnabled} is {@code true}.
 	 * 
 	 * @param state
 	 *            the state of the receiver.
 	 * @param msg
 	 *            the message to schedule.
+	 * @return the set of messages to treat now.
 	 */
-	public static void intercept(final AbstractState state,
+	public static List<AbstractContent> intercept(final AbstractState state,
 			final AbstractContent msg) {
-
+		// TODO replace or adapt the following lines
+		ArrayList<AbstractContent> set = new ArrayList<>();
+		set.add(msg);
+		return set;
 	}
 }

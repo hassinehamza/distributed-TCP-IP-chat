@@ -110,8 +110,8 @@ public class ReadMessagesFromNetwork implements Runnable {
 	 *            the reference to the state objec of the server where all the
 	 *            attributes are stored.
 	 */
-	public ReadMessagesFromNetwork(final Server server,
-			final Selector selector, final SelectionKey acceptClientKey,
+	public ReadMessagesFromNetwork(final Server server, final Selector selector,
+			final SelectionKey acceptClientKey,
 			final ServerSocketChannel listenChanClient,
 			final SelectionKey acceptServerKey,
 			final ServerSocketChannel listenChanServer, final State state) {
@@ -156,16 +156,8 @@ public class ReadMessagesFromNetwork implements Runnable {
 					try {
 						if (key.equals(acceptServerKey)) {
 							server.acceptNewServer(listenChanServer);
-							if (LOG_ON && COMM.isDebugEnabled()) {
-								COMM.debug("allServerWorkers.size() = "
-										+ state.allServerWorkers.size());
-							}
 						} else if (key.equals(acceptClientKey)) {
 							server.acceptNewClient(listenChanClient);
-							if (LOG_ON && COMM.isDebugEnabled()) {
-								COMM.debug("allClientWorkers.size() = "
-										+ state.allClientWorkers.size());
-							}
 						} else {
 							COMM.fatal("unknown accept");
 							return;
@@ -176,13 +168,16 @@ public class ReadMessagesFromNetwork implements Runnable {
 					}
 				}
 				if (key.isReadable()) {
-					state.currKey = Optional.of(key);
-					Optional.ofNullable(state.allServerWorkers.get(key))
-							.ifPresent(w -> treatMessageFromNeighbouringServer(
-									key, w));
-					Optional.ofNullable(state.allClientWorkers.get(key))
-							.ifPresent(
-									w -> treatMessageFromLocalClient(key, w));
+					synchronized (state) {
+						state.currKey = Optional.of(key);
+						Optional.ofNullable(state.allServerWorkers.get(key))
+								.ifPresent(
+										w -> treatMessageFromNeighbouringServer(
+												key, w));
+						Optional.ofNullable(state.allClientWorkers.get(key))
+								.ifPresent(w -> treatMessageFromLocalClient(key,
+										w));
+					}
 				}
 			}
 		}

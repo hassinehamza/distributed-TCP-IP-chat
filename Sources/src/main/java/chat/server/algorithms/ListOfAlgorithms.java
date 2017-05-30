@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
 
-import chat.common.AbstractContent;
 import chat.common.Action;
 import chat.server.State;
 
@@ -52,7 +51,7 @@ public enum ListOfAlgorithms {
 	 * unmodifiable and the attribute is {@code final} so that no other
 	 * collection can be substituted after being statically assigned.
 	 */
-	private final Map<Integer, ? extends Action> mapOfActions;
+	private final Map<Integer, ? extends Action<State>> mapOfActions;
 
 	/**
 	 * index of the first message type of the election algorithm.
@@ -65,7 +64,7 @@ public enum ListOfAlgorithms {
 	 * @param map
 	 *            collection of actions of this algorithm.
 	 */
-	ListOfAlgorithms(final Map<Integer, ? extends Action> map) {
+	ListOfAlgorithms(final Map<Integer, ? extends Action<State>> map) {
 		mapOfActions = Collections.unmodifiableMap(map);
 	}
 
@@ -85,20 +84,22 @@ public enum ListOfAlgorithms {
 		boolean executed = false;
 		for (ListOfAlgorithms algorithm : Arrays
 				.asList(ListOfAlgorithms.values())) {
-			for (Iterator<? extends Action> actions = algorithm.mapOfActions
+			for (Iterator<? extends Action<State>> actions = algorithm.mapOfActions
 					.values().iterator(); actions.hasNext();) {
-				Action action = actions.next();
+				Action<State> action = actions.next();
 				if (action.identifier() == actionIndex) {
 					executed = true;
-					AbstractContent c;
-					if (content instanceof AbstractContent) {
-						c = (AbstractContent) content;
+					if (action.contentClass().isInstance(content)
+							&& state != null) {
+						action.executeOrIntercept(state,
+								action.contentClass().cast(content));
 					} else {
 						throw new IllegalArgumentException(
-								"The content is not of type AbstractContent: "
-										+ content.getClass().getName());
+								"The content is not of the right type ("
+										+ content + "/" + action.contentClass()
+										+ ") or the state is null (" + state
+										+ ")");
 					}
-					action.execute(state, c);
 				}
 			}
 		}

@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import chat.client.State;
-import chat.common.AbstractContent;
 import chat.common.Action;
 
 /**
@@ -50,7 +49,7 @@ public enum ListOfAlgorithms {
 	 * unmodifiable and the attribute is {@code final} so that no other
 	 * collection can be substituted after being statically assigned.
 	 */
-	private final Map<Integer, ? extends Action> mapOfActions;
+	private final Map<Integer, ? extends Action<State>> mapOfActions;
 
 	/**
 	 * index of the first message type of this algorithm.
@@ -65,7 +64,7 @@ public enum ListOfAlgorithms {
 	 * @param map
 	 *            collection of actions of this algorithm.
 	 */
-	ListOfAlgorithms(final Map<Integer, ? extends Action> map) {
+	ListOfAlgorithms(final Map<Integer, ? extends Action<State>> map) {
 		mapOfActions = Collections.unmodifiableMap(map);
 	}
 
@@ -74,7 +73,7 @@ public enum ListOfAlgorithms {
 	 * 
 	 * @return the map of actions.
 	 */
-	private Map<Integer, ? extends Action> getMapOfActions() {
+	private Map<Integer, ? extends Action<State>> getMapOfActions() {
 		return mapOfActions;
 	}
 
@@ -93,8 +92,8 @@ public enum ListOfAlgorithms {
 			final Object content) {
 		Arrays.asList(values()).stream().map(ListOfAlgorithms::getMapOfActions)
 				.map(map -> map.get(actionIndex))
-				.filter(action -> content instanceof AbstractContent)
+				.filter(action -> action.contentClass().isInstance(content))
 				.forEach(action -> action.executeOrIntercept(state,
-						(AbstractContent) content));
+						action.contentClass().cast(content)));
 	}
 }
