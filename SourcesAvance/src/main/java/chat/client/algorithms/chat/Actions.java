@@ -21,11 +21,7 @@ Contributor(s):
  */
 package chat.client.algorithms.chat;
 
-import java.util.Optional;
-
 import chat.client.State;
-import chat.common.AbstractContent;
-import chat.common.AbstractState;
 import chat.server.Server;
 
 /**
@@ -54,21 +50,14 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message.
 	 */
-	public static void receiveChatMessageContent(final AbstractState state,
-			final AbstractContent content) {
-		ChatMessageContent msg = (ChatMessageContent) Optional
-				.ofNullable(content)
-				.filter(c -> c instanceof ChatMessageContent)
-				.orElseThrow(IllegalArgumentException::new);
-		State cstate = (State) Optional.ofNullable(state)
-				.filter(s -> s instanceof State)
-				.orElseThrow(IllegalArgumentException::new);
-		synchronized (cstate) {
-			cstate.nbChatMessageContentReceived++;
+	public static void receiveChatMessageContent(final State state,
+			final ChatMessageContent content) {
+		synchronized (state) {
+			state.nbChatMessageContentReceived++;
 			System.out.println("client "
-					+ cstate.identity % Server.OFFSET_ID_CLIENT + " of server "
-					+ cstate.identity / Server.OFFSET_ID_CLIENT + " receives "
-					+ msg);
+					+ state.identity % Server.OFFSET_ID_CLIENT + " of server "
+					+ state.identity / Server.OFFSET_ID_CLIENT + " receives "
+					+ content);
 		}
 	}
 }

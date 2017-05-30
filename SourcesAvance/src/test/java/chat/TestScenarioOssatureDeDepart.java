@@ -67,6 +67,7 @@ public class TestScenarioOssatureDeDepart extends Scenario {
 		// without sleep, not all outputs
 		sleep(3000);
 		System.out.flush();
+		// the scenario has ended, then get state content without synchronized
 		Assert.assertEquals(1, c0.getState().nbChatMessageContentSent);
 		Assert.assertEquals(1, c1.getState().nbChatMessageContentSent);
 		Assert.assertEquals(1, c2.getState().nbChatMessageContentSent);

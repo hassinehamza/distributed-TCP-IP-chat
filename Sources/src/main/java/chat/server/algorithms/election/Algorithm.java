@@ -26,8 +26,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import chat.common.AbstractContent;
-import chat.common.AbstractState;
 import chat.common.Action;
+import chat.server.State;
 
 /**
  * This Enumeration type declares the algorithm of the election part of the
@@ -38,12 +38,12 @@ import chat.common.Action;
  * @author Denis Conan
  * 
  */
-public enum Algorithm implements Action {
+public enum Algorithm implements Action<State> {
 	/**
 	 * the enumerator for the action of the token message of the election
 	 * algorithm.
 	 */
-	TOKEN_MESSAGE() {
+	TOKEN_MESSAGE(ElectionTokenContent.class) {
 		/**
 		 * executes the action by calling a static method.
 		 * 
@@ -52,16 +52,15 @@ public enum Algorithm implements Action {
 		 * @param content
 		 *            the message to treat.
 		 */
-		public void execute(final AbstractState state,
-				final AbstractContent content) {
-			Actions.receiveTokenContent(state, content);
+		public void execute(final State state, final AbstractContent content) {
+			Actions.receiveTokenContent(state, (ElectionTokenContent) content);
 		}
 	},
 	/**
 	 * the enumerator for the action of the leader message of the election
 	 * algorithm.
 	 */
-	LEADER_MESSAGE() {
+	LEADER_MESSAGE(ElectionLeaderContent.class) {
 		/**
 		 * executes the action by calling a static method.
 		 * 
@@ -70,9 +69,9 @@ public enum Algorithm implements Action {
 		 * @param content
 		 *            the message to treat.
 		 */
-		public void execute(final AbstractState state,
-				final AbstractContent content) {
-			Actions.receiveLeaderContent(state, content);
+		public void execute(final State state, final AbstractContent content) {
+			Actions.receiveLeaderContent(state,
+					(ElectionLeaderContent) content);
 		}
 	};
 
@@ -92,6 +91,11 @@ public enum Algorithm implements Action {
 	private final int actionIndex;
 
 	/**
+	 * the type of the content.
+	 */
+	private final Class<? extends AbstractContent> contentClass;
+
+	/**
 	 * static block to build collections of actions.
 	 */
 	static {
@@ -104,11 +108,15 @@ public enum Algorithm implements Action {
 
 	/**
 	 * is the constructor of message type object.
+	 * 
+	 * @param contentClass
+	 *            the type of the content.
 	 */
-	Algorithm() {
+	Algorithm(final Class<? extends AbstractContent> contentClass) {
 		this.actionIndex = chat.common.Action.OFFSET_SERVER_ALGORITHMS
 				+ chat.server.algorithms.ListOfAlgorithms.OFFSET_ELECTION_ALGORITHM
 				+ ordinal();
+		this.contentClass = contentClass;
 	}
 
 	/**
@@ -118,6 +126,15 @@ public enum Algorithm implements Action {
 	 */
 	public int identifier() {
 		return actionIndex;
+	}
+
+	/**
+	 * gets the type of the content.
+	 * 
+	 * @return the type of the content.
+	 */
+	public Class<? extends AbstractContent> contentClass() {
+		return contentClass;
 	}
 
 	@Override

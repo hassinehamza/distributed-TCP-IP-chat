@@ -21,8 +21,7 @@ Contributor(s):
  */
 package chat.server.algorithms.election;
 
-import chat.common.AbstractContent;
-import chat.common.AbstractState;
+import chat.server.State;
 
 /**
  * This class defines the methods implementing the reaction of the state machine
@@ -48,8 +47,8 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message to treat.
 	 */
-	public static void receiveTokenContent(final AbstractState state,
-			final AbstractContent content) {
+	public static void receiveTokenContent(final State state,
+			final ElectionTokenContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
@@ -63,8 +62,8 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message to treat.
 	 */
-	public static void receiveLeaderContent(final AbstractState state,
-			final AbstractContent content) {
+	public static void receiveLeaderContent(final State state,
+			final ElectionLeaderContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
