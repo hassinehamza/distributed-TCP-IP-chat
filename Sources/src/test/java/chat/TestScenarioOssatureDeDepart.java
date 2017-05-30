@@ -31,6 +31,7 @@ public class TestScenarioOssatureDeDepart extends Scenario {
 		if (LOG_ON && TEST.isInfoEnabled()) {
 			TEST.info("starting the servers...");
 		}
+		
 		Server s0 = instanciateAServer("0");
 		sleep(500);
 		Server s1 = instanciateAServer("1 localhost 0");
