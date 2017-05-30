@@ -26,17 +26,17 @@ import chat.common.AbstractContent;
 /**
  * This class defines the content of a token message of the election algorithm.
  * 
- * TODO add attributes.
+ * TODO add attributes. done
  * 
- * TODO implement the constructor.
+ * TODO implement the constructor. done
  * 
- * TODO add getters.
+ * TODO add getters. done
  * 
  * TODO add the toString method.
  * 
- * TODO add your names in the list of authors.
+ * TODO add your names in the list of authors. done
  * 
- * @author Denis Conan
+ * @author Denis Conan, Hamza Hassine, Majdi Haouech
  *
  */
 public class ElectionTokenContent extends AbstractContent {
@@ -44,10 +44,56 @@ public class ElectionTokenContent extends AbstractContent {
 	 * version number for serialization.
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private int caw, parent, win, rec, lrec;
+	String status;
 	/**
 	 * constructs the content of a leader election message.
 	 */
 	public ElectionTokenContent() {
+		caw = -1;
+		parent = -1;
+		win = -1;
+		rec = 0;
+		lrec = 0;
+		status = "dormant";
+	}
+	public int getCaw() {
+		return caw;
+	}
+	public void setCaw(int caw) {
+		this.caw = caw;
+	}
+	public int getWin() {
+		return win;
+	}
+	public void setWin(int win) {
+		this.win = win;
+	}
+	public int getParent() {
+		return parent;
+	}
+	public void setParent(int parent) {
+		this.parent = parent;
+	}
+	public int getLrec() {
+		return lrec;
+	}
+	public void setLrec(int lrec) {
+		this.lrec = lrec;
+	}
+	public int getRec() {
+		return rec;
+	}
+	public void setRec(int rec) {
+		this.rec = rec;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	public String toString() {
+		return "";
 	}
 }
