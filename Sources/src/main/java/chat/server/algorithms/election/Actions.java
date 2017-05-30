@@ -37,6 +37,12 @@ public final class Actions {
 	 * avoids the creation of instances.
 	 */
 	private Actions() {
+		State.caw = -1;
+		State.parent = -1;
+		State.win = -1;
+		State.rec = 0;
+		State.lrec = 0;
+		State.status = "dormant";
 	}
 
 	/**
@@ -52,6 +58,11 @@ public final class Actions {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
+		if(State.caw == -1 || content.getInitiator() < State.caw) {
+			State.caw = content.getInitiator();
+			State.rec = 0;
+			State.parent = content.getSender();
+		}
 	}
 
 	/**

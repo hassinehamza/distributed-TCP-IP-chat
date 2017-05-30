@@ -44,54 +44,25 @@ public class ElectionTokenContent extends AbstractContent {
 	 * version number for serialization.
 	 */
 	private static final long serialVersionUID = 1L;
-	private int caw, parent, win, rec, lrec;
-	String status;
+	private int sender, initiator;
 	/**
 	 * constructs the content of a leader election message.
 	 */
 	public ElectionTokenContent() {
-		caw = -1;
-		parent = -1;
-		win = -1;
-		rec = 0;
-		lrec = 0;
-		status = "dormant";
+		sender = 0;
+		initiator = 0;
 	}
-	public int getCaw() {
-		return caw;
+	public int getSender() {
+		return sender;
 	}
-	public void setCaw(int caw) {
-		this.caw = caw;
+	public void setSender(int sender) {
+		this.sender = sender;
 	}
-	public int getWin() {
-		return win;
+	public int getInitiator() {
+		return initiator;
 	}
-	public void setWin(int win) {
-		this.win = win;
-	}
-	public int getParent() {
-		return parent;
-	}
-	public void setParent(int parent) {
-		this.parent = parent;
-	}
-	public int getLrec() {
-		return lrec;
-	}
-	public void setLrec(int lrec) {
-		this.lrec = lrec;
-	}
-	public int getRec() {
-		return rec;
-	}
-	public void setRec(int rec) {
-		this.rec = rec;
-	}
-	public String getStatus() {
-		return status;
-	}
-	public void setStatus(String status) {
-		this.status = status;
+	public void setInitiator(int initiator) {
+		this.initiator = initiator;
 	}
 	public String toString() {
 		return "";

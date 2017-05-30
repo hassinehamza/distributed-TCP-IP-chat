@@ -51,7 +51,9 @@ public class State extends AbstractState {
 	 * identity of this server.
 	 */
 	private int identity;
-
+	
+	public static int caw, parent, rec, lrec, win;
+	public static String status;
 	/**
 	 * one counter per client in order to control the propagation of client
 	 * messages: stop forward to remote servers when the message has already
