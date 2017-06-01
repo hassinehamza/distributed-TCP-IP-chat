@@ -36,7 +36,7 @@ import chat.common.AbstractContent;
  * 
  * TODO add your names in the list of authors.
  * 
- * @author Denis Conan
+ * @author Denis Conan, Hamza Hassine, Majdi Haouech
  *
  */
 public class ElectionLeaderContent extends AbstractContent {
@@ -44,10 +44,27 @@ public class ElectionLeaderContent extends AbstractContent {
 	 * version number for serialization.
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private int sender, initiator;
 	/**
 	 * constructs the content of a leader election message.
 	 */
 	public ElectionLeaderContent() {
+		sender = 0;
+		initiator = 0;
+	}
+	public int getSender() {
+		return sender;
+	}
+	public void setSender(int sender) {
+		this.sender = sender;
+	}
+	public int getInitiator() {
+		return initiator;
+	}
+	public void setInitiator(int initiator) {
+		this.initiator = initiator;
+	}
+	public String toString() {
+		return "";
 	}
 }

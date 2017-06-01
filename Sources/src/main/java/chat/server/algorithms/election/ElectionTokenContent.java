@@ -26,17 +26,17 @@ import chat.common.AbstractContent;
 /**
  * This class defines the content of a token message of the election algorithm.
  * 
- * TODO add attributes.
+ * TODO add attributes. done
  * 
- * TODO implement the constructor.
+ * TODO implement the constructor. done
  * 
- * TODO add getters.
+ * TODO add getters. done
  * 
  * TODO add the toString method.
  * 
- * TODO add your names in the list of authors.
+ * TODO add your names in the list of authors. done
  * 
- * @author Denis Conan
+ * @author Denis Conan, Hamza Hassine, Majdi Haouech
  *
  */
 public class ElectionTokenContent extends AbstractContent {
@@ -44,10 +44,27 @@ public class ElectionTokenContent extends AbstractContent {
 	 * version number for serialization.
 	 */
 	private static final long serialVersionUID = 1L;
-
+	private int sender, initiator;
 	/**
 	 * constructs the content of a leader election message.
 	 */
 	public ElectionTokenContent() {
+		sender = 0;
+		initiator = 0;
+	}
+	public int getSender() {
+		return sender;
+	}
+	public void setSender(int sender) {
+		this.sender = sender;
+	}
+	public int getInitiator() {
+		return initiator;
+	}
+	public void setInitiator(int initiator) {
+		this.initiator = initiator;
+	}
+	public String toString() {
+		return "";
 	}
 }
