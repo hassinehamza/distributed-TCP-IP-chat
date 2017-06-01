@@ -38,6 +38,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 import chat.common.FullDuplexMsgWorker;
+import chat.server.algorithms.election.Algorithm;
+import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
  * This class defines server object. The server ojbect connects to existing chat
@@ -107,7 +109,7 @@ public class Server {
 	public Server(final String[] args) {
 		int identity = Integer.parseInt(args[0]);
 		int portnum = BASE_PORTNB_LISTEN_CLIENT + Integer.parseInt(args[0]);
-		state = new State(identity);
+		state = new State(identity , this);
 		InetSocketAddress rcvAddressClient;
 		InetSocketAddress rcvAddressServer;
 		try {
@@ -218,9 +220,31 @@ public class Server {
 			throw new IllegalArgumentException("no command line");
 		} else {
 			if (LOG_ON && GEN.isDebugEnabled()) {
+				
 				GEN.debug("new command line on console");
+				
 			}
+			
+			state.setStatus("Initiator");
+			state.setCaw(state.getIdentity());
+			try {
+				sendToAllServers(Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(),
+						state.seqNumber,new ElectionTokenContent(state.getIdentity(),state.getIdentity()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
 		}
+		
+		
+		
+		
+		
+		
+		
+		
 		if (line.equals("quit")) {
 			threadToRcvMsgs.interrupt();
 			Thread.currentThread().interrupt();

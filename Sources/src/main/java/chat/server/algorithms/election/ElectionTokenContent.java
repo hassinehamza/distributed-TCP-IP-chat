@@ -48,9 +48,10 @@ public class ElectionTokenContent extends AbstractContent {
 	/**
 	 * constructs the content of a leader election message.
 	 */
-	public ElectionTokenContent() {
-		sender = 0;
-		initiator = 0;
+	public ElectionTokenContent(int sender , int initiator) {
+		this.initiator=initiator;
+		this.sender = sender;
+		
 	}
 	public int getSender() {
 		return sender;

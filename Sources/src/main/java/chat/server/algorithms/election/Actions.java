@@ -21,6 +21,9 @@ Contributor(s):
  */
 package chat.server.algorithms.election;
 
+import java.awt.SecondaryLoop;
+import java.io.IOException;
+
 import chat.server.State;
 
 /**
@@ -37,12 +40,7 @@ public final class Actions {
 	 * avoids the creation of instances.
 	 */
 	private Actions() {
-		State.caw = -1;
-		State.parent = -1;
-		State.win = -1;
-		State.rec = 0;
-		State.lrec = 0;
-		State.status = "dormant";
+
 	}
 
 	/**
@@ -58,11 +56,47 @@ public final class Actions {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
-		if(State.caw == -1 || content.getInitiator() < State.caw) {
-			State.caw = content.getInitiator();
-			State.rec = 0;
-			State.parent = content.getSender();
+		
+		synchronized (state) {	
+		if(state.getCaw() == -1 || content.getInitiator() < state.getCaw()) {
+			state.setCaw(content.getInitiator());
+			state.setRec(0);
+			state.setParent(content.getSender());
+			state.setElectionParentKey(state.currKey);
+			try {
+				state.getServer().sendToAllServersExceptOne(state.getElectionParentKey(), Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionTokenContent(content.getSender(), content.getInitiator()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
+		if (state.getCaw() == content.getInitiator()){
+			state.setRec(state.getRec()+1);
+			if(state.getRec()== state.allServerWorkers.size()){
+				if(state.getCaw()== state.getIdentity()){
+					try {
+						state.getServer().sendToAllServers(Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionLeaderContent(state.getIdentity(),state.getIdentity()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+				}else{
+					try {
+						state.getServer().sendToAServer(state.getElectionParentKey(), Algorithm.LEADER_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionTokenContent(state.getIdentity(), content.getInitiator()));
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+		}
+		
+		
+		}
+		
 	}
 
 	/**
@@ -78,5 +112,29 @@ public final class Actions {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
+	synchronized (state) {
+		
+		
+		if(state.getLrec()==0 && state.getIdentity()!=content.getInitiator()){
+			try {
+				state.getServer().sendToAllServers(Algorithm.LEADER_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionLeaderContent(state.getIdentity(),content.getInitiator()));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		state.setLrec(state.getLrec()+1);
+		state.setWin(content.getInitiator());
+		if(state.getLrec()==state.allServerWorkers.size()){
+			if (state.getWin()==state.getIdentity()){
+				state.setStatus("leader");
+			}else{
+				state.setStatus("non-leader");
+			}
+		}
+		
+		
+	}
+		
 	}
 }

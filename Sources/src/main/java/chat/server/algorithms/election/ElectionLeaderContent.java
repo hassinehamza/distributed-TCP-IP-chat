@@ -48,9 +48,9 @@ public class ElectionLeaderContent extends AbstractContent {
 	/**
 	 * constructs the content of a leader election message.
 	 */
-	public ElectionLeaderContent() {
-		sender = 0;
-		initiator = 0;
+	public ElectionLeaderContent(int sender , int init) {
+		this.sender = sender ; 
+		this.initiator = init;
 	}
 	public int getSender() {
 		return sender;

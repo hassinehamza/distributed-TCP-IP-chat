@@ -50,10 +50,66 @@ public class State extends AbstractState {
 	/**
 	 * identity of this server.
 	 */
-	private int identity;
 	
-	public static int caw, parent, rec, lrec, win;
-	public static String status;
+	private int identity;
+	private Server server;
+	
+	private SelectionKey electionParentKey;
+	
+	private int caw = -1;
+	private int parent = -1;
+	private int win = -1;
+	private int rec = 0;
+	private int lrec = 0;
+	private String status = "dormant";
+	public int getCaw() {
+		return caw;
+	}
+
+	public void setCaw(int caw) {
+		this.caw = caw;
+	}
+
+	public int getParent() {
+		return parent;
+	}
+
+	public void setParent(int parent) {
+		this.parent = parent;
+	}
+
+	public int getWin() {
+		return win;
+	}
+
+	public void setWin(int win) {
+		this.win = win;
+	}
+
+	public int getRec() {
+		return rec;
+	}
+
+	public void setRec(int rec) {
+		this.rec = rec;
+	}
+
+	public int getLrec() {
+		return lrec;
+	}
+
+	public void setLrec(int lrec) {
+		this.lrec = lrec;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	/**
 	 * one counter per client in order to control the propagation of client
 	 * messages: stop forward to remote servers when the message has already
@@ -72,11 +128,12 @@ public class State extends AbstractState {
 	 * @param identity
 	 *            the identity of this server.
 	 */
-	public State(final int identity) {
+	public State(final int identity , Server serv) {
 		this.identity = identity;
 		allServerWorkers = new HashMap<>();
 		allClientWorkers = new HashMap<>();
 		clientSeqNumbers = new HashMap<>();
+		this.setServer(serv) ;
 		assert invariant();
 	}
 
@@ -97,5 +154,22 @@ public class State extends AbstractState {
 	 */
 	public int getIdentity() {
 		return identity;
+	}
+
+	public SelectionKey getElectionParentKey() {
+		
+		return electionParentKey;
+	}
+
+	public void setElectionParentKey(SelectionKey electionParentKey) {
+		this.electionParentKey = electionParentKey;
+	}
+
+	public Server getServer() {
+		return server;
+	}
+
+	public void setServer(Server server) {
+		this.server = server;
 	}
 }
