@@ -90,6 +90,7 @@ public abstract class Scenario {
 	 */
 	public Server instanciateAServer(final String args) {
 		Server chatServer = new Server(args.split("\\s+"));
+		
 		chatServer.startThreadReadMessagesFromNetwork();
 		servers.add(chatServer);
 		return chatServer;

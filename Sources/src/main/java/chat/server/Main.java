@@ -23,7 +23,7 @@ package chat.server;
 
 import static chat.common.Log.GEN;
 import static chat.common.Log.LOG_ON;
-
+import static chat.common.Log.ELECTION;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -76,6 +76,8 @@ public final class Main {
 					+ " <list of pairs hostname servernumber>");
 			return;
 		}
+		
+		
 		server = new Server(args);
 		server.startThreadReadMessagesFromNetwork();
 		BufferedReader bufin = new BufferedReader(
@@ -88,5 +90,6 @@ public final class Main {
 			}
 			server.treatConsoleInput(consoleMsg);
 		}
+		
 	}
 }

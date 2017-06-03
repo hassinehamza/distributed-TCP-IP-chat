@@ -21,9 +21,17 @@ Contributor(s):
  */
 package chat.server.algorithms.election;
 
+import static chat.common.Log.GEN;
+import static chat.common.Log.LOG_ON;
+import static chat.common.Log.ELECTION;
+import static chat.common.Log.*;
+
 import java.awt.SecondaryLoop;
 import java.io.IOException;
 
+import org.apache.log4j.Level;
+
+import chat.common.Log;
 import chat.server.State;
 
 /**
@@ -43,6 +51,12 @@ public final class Actions {
 
 	}
 
+	
+	static {
+	    // whatever code is needed for initialization goes here
+		Log.configureALogger(LOGGER_NAME_ELECTION, Level.INFO);
+	}
+	
 	/**
 	 * treats a token message of the election algorithm.
 	 * 
@@ -57,7 +71,16 @@ public final class Actions {
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
 		
+		
+		
 		synchronized (state) {	
+			//System.out.println("recu de type token de");
+			
+			if (LOG_ON && ELECTION.isInfoEnabled()) {
+				ELECTION.info("recu de type token");
+			}
+
+		
 		if(state.getCaw() == -1 || content.getInitiator() < state.getCaw()) {
 			state.setCaw(content.getInitiator());
 			state.setRec(0);
@@ -76,7 +99,7 @@ public final class Actions {
 			if(state.getRec()== state.allServerWorkers.size()){
 				if(state.getCaw()== state.getIdentity()){
 					try {
-						state.getServer().sendToAllServers(Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionLeaderContent(state.getIdentity(),state.getIdentity()));
+						state.getServer().sendToAllServers(Algorithm.LEADER_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionLeaderContent(state.getIdentity(),state.getIdentity()));
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -84,7 +107,7 @@ public final class Actions {
 					
 				}else{
 					try {
-						state.getServer().sendToAServer(state.getElectionParentKey(), Algorithm.LEADER_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionTokenContent(state.getIdentity(), content.getInitiator()));
+						state.getServer().sendToAServer(state.getElectionParentKey(), Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber, new ElectionTokenContent(state.getIdentity(), content.getInitiator()));
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -113,6 +136,10 @@ public final class Actions {
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
 	synchronized (state) {
+		//System.out.println("recu de type Leader de "+ content.getSender() );
+		if (LOG_ON && ELECTION.isInfoEnabled()) {
+			ELECTION.info("recu de type Leader");
+		}
 		
 		
 		if(state.getLrec()==0 && state.getIdentity()!=content.getInitiator()){
@@ -128,8 +155,14 @@ public final class Actions {
 		if(state.getLrec()==state.allServerWorkers.size()){
 			if (state.getWin()==state.getIdentity()){
 				state.setStatus("leader");
+				if (LOG_ON && ELECTION.isInfoEnabled()) {
+					ELECTION.info("je suis gagnat");
+				}
 			}else{
 				state.setStatus("non-leader");
+				if (LOG_ON && ELECTION.isInfoEnabled()) {
+					ELECTION.info("je suis perdant");
+				}
 			}
 		}
 		

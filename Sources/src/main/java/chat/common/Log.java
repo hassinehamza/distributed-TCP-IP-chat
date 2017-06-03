@@ -25,6 +25,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import chat.server.algorithms.election.ElectionLeaderContent;
+
 /**
  * This class contains the configuration of some logging facilities.
  * 
@@ -90,7 +92,7 @@ public final class Log {
 		CHAT.setLevel(Level.WARN);
 		ELECTION.setLevel(Level.WARN);
 	}
-
+ 
 	/**
 	 * private constructor to avoid instantiation.
 	 */
