@@ -79,8 +79,7 @@ public final class Log {
 	/**
 	 * logger object for the election algorithm.
 	 */
-	public static final Logger ELECTION = Logger
-			.getLogger(LOGGER_NAME_ELECTION);
+	public static final Logger ELECTION = Logger.getLogger(LOGGER_NAME_ELECTION);
 
 	/**
 	 * static configuration, which can be changed by command line options.
@@ -92,7 +91,7 @@ public final class Log {
 		CHAT.setLevel(Level.WARN);
 		ELECTION.setLevel(Level.WARN);
 	}
- 
+
 	/**
 	 * private constructor to avoid instantiation.
 	 */
@@ -107,8 +106,7 @@ public final class Log {
 	 * @param level
 	 *            the level.
 	 */
-	public static void configureALogger(final String loggerName,
-			final Level level) {
+	public static void configureALogger(final String loggerName, final Level level) {
 		if (loggerName == null) {
 			return;
 		}

@@ -49,10 +49,8 @@ public abstract class Scenario {
 	 * @throws UnknownHostException
 	 *             the exception thrown in case network configuration problem.
 	 */
-	public Client instanciateAClient(final int serverPortNb)
-			throws UnknownHostException {
-		Client chatClient = new Client(InetAddress.getLocalHost().getHostName(),
-				serverPortNb);
+	public Client instanciateAClient(final int serverPortNb) throws UnknownHostException {
+		Client chatClient = new Client(InetAddress.getLocalHost().getHostName(), serverPortNb);
 		chatClient.startThreadReadMessagesFromNetwork();
 		clients.add(chatClient);
 		return chatClient;
@@ -70,8 +68,8 @@ public abstract class Scenario {
 	 *             during the exchanges with the server due to the keyboard
 	 *             entries.
 	 */
-	public void emulateAnInputLineFromTheConsoleForAClient(final Client client,
-			final String inputLine) throws IOException {
+	public void emulateAnInputLineFromTheConsoleForAClient(final Client client, final String inputLine)
+			throws IOException {
 		client.treatConsoleInput(inputLine);
 	}
 
@@ -90,7 +88,7 @@ public abstract class Scenario {
 	 */
 	public Server instanciateAServer(final String args) {
 		Server chatServer = new Server(args.split("\\s+"));
-		
+
 		chatServer.startThreadReadMessagesFromNetwork();
 		servers.add(chatServer);
 		return chatServer;
@@ -104,8 +102,7 @@ public abstract class Scenario {
 	 * @param inputLine
 	 *            the line inputed.
 	 */
-	public void emulateAnInputLineFromTheConsoleForAServer(final Server server,
-			final String inputLine) {
+	public void emulateAnInputLineFromTheConsoleForAServer(final Server server, final String inputLine) {
 		server.treatConsoleInput(inputLine);
 	}
 

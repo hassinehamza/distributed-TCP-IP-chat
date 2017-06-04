@@ -1,5 +1,4 @@
 
-
 /**
 This file is part of the muDEBS middleware.
 
@@ -29,95 +28,87 @@ import java.util.List;
 import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
-* This class contains the interception of the calls to the actions to receive
-* messages in the client. The behaviour is controlled by the boolean constant
-* {@link interceptionEnabled}. When set, the default method
-* {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
-* redirects the receipt of the message to the method
-* {@link #intercept(AbstractState, AbstractContent)}.
-*
-* @author Denis Conan
-*/
+ * This class contains the interception of the calls to the actions to receive
+ * messages in the client. The behaviour is controlled by the boolean constant
+ * {@link interceptionEnabled}. When set, the default method
+ * {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
+ * redirects the receipt of the message to the method
+ * {@link #intercept(AbstractState, AbstractContent)}.
+ *
+ * @author Denis Conan
+ */
 public final class Interceptor {
 
- /**
-  * states whether some non-determinism is introduced to test distributed
-  * algorithms. This is done by rerouting in the default method
-  * {@link Action#executeOrIntercept(AbstractState, AbstractContent)}.
-  */
- private static boolean interceptionEnabled = false;
+	/**
+	 * states whether some non-determinism is introduced to test distributed
+	 * algorithms. This is done by rerouting in the default method
+	 * {@link Action#executeOrIntercept(AbstractState, AbstractContent)}.
+	 */
+	private static boolean interceptionEnabled = false;
 
- /**
-  * number of milliseconds for delaying messages.
-  */
- @SuppressWarnings("unused")
- private static final int DELAY = 500;
+	/**
+	 * number of milliseconds for delaying messages.
+	 */
+	@SuppressWarnings("unused")
+	private static final int DELAY = 500;
 
- /**
-  * private constructor to avoid instantiation.
-  */
- private Interceptor() {
- }
+	/**
+	 * private constructor to avoid instantiation.
+	 */
+	private Interceptor() {
+	}
 
- /**
-  * gets the boolean value of the attribute {@link #interceptionEnabled}.
-  *
-  * @return the boolean value.
-  */
- public static boolean isInterceptionEnabled() {
-   return interceptionEnabled;
- }
+	/**
+	 * gets the boolean value of the attribute {@link #interceptionEnabled}.
+	 *
+	 * @return the boolean value.
+	 */
+	public static boolean isInterceptionEnabled() {
+		return interceptionEnabled;
+	}
 
- /**
-  * sets the boolean value of the attribute {@link #interceptionEnabled}.
-  *
-  * @param interceptionEnabled
- 
- *            the new boolean value.
-  */
- public static void setInterceptionEnabled(final boolean interceptionEnabled) {
-   Interceptor.interceptionEnabled = interceptionEnabled;
- }
+	/**
+	 * sets the boolean value of the attribute {@link #interceptionEnabled}.
+	 *
+	 * @param interceptionEnabled
+	 * 
+	 *            the new boolean value.
+	 */
+	public static void setInterceptionEnabled(final boolean interceptionEnabled) {
+		Interceptor.interceptionEnabled = interceptionEnabled;
+	}
 
- /**
-  * intercepts the receipt of a message. This is where is introduced some
-  * non-determinism for integration testing of the distributed algorithms.
-  * This method is called by the default method
-  * {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
-  * when the interception mechanism is activated, that is
-  * {@link #isInterceptionEnabled} is {@code true}.
-  *
-  * @param state
- 
- *            the state of the receiver.
-  * @param msg
- 
- *            the message to schedule.
-  * @return the set of messages to treat now.
-  */
- public static List<AbstractContent> intercept(final AbstractState state,
-     final AbstractContent msg) {
-   ArrayList<AbstractContent> set = new ArrayList<>();
-   if (msg instanceof ElectionTokenContent) {
-     ElectionTokenContent content = (ElectionTokenContent) msg;
-     chat.server.State s = (chat.server.State) state;
-   if (content.getInitiator() == content.getSender()) {
-	   
-          (new TreatDelayedMessage<chat.server.State, ElectionTokenContent>(s, content, s.currKey)).run();
-     } else {
-      set.add(msg);
-    }
-   } else {
-     set.add(msg);
-   }
-   return set;
- }
- 
+	/**
+	 * intercepts the receipt of a message. This is where is introduced some
+	 * non-determinism for integration testing of the distributed algorithms.
+	 * This method is called by the default method
+	 * {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
+	 * when the interception mechanism is activated, that is
+	 * {@link #isInterceptionEnabled} is {@code true}.
+	 *
+	 * @param state
+	 * 
+	 *            the state of the receiver.
+	 * @param msg
+	 * 
+	 *            the message to schedule.
+	 * @return the set of messages to treat now.
+	 */
+	public static List<AbstractContent> intercept(final AbstractState state, final AbstractContent msg) {
+		ArrayList<AbstractContent> set = new ArrayList<>();
+		if (msg instanceof ElectionTokenContent) {
+			ElectionTokenContent content = (ElectionTokenContent) msg;
+			chat.server.State s = (chat.server.State) state;
+			if (content.getInitiator() == content.getSender()) {
 
- 
+				(new TreatDelayedMessage<chat.server.State, ElectionTokenContent>(s, content, s.currKey)).run();
+			} else {
+				set.add(msg);
+			}
+		} else {
+			set.add(msg);
+		}
+		return set;
+	}
+
 }
-
-
-
-
-

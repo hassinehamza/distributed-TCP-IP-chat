@@ -95,10 +95,8 @@ public class FullDuplexMsgWorker {
 	public FullDuplexMsgWorker(final SocketChannel channel) {
 		inBuffers = new ByteBuffer[2];
 		outBuffers = new ByteBuffer[2];
-		inBuffers[0] = ByteBuffer
-				.allocate(Integer.SIZE * SIZE_HEADER / Byte.SIZE);
-		outBuffers[0] = ByteBuffer
-				.allocate(Integer.SIZE * SIZE_HEADER / Byte.SIZE);
+		inBuffers[0] = ByteBuffer.allocate(Integer.SIZE * SIZE_HEADER / Byte.SIZE);
+		outBuffers[0] = ByteBuffer.allocate(Integer.SIZE * SIZE_HEADER / Byte.SIZE);
 		inBuffers[1] = null;
 		outBuffers[1] = null;
 		readState = ReadMessageStatus.ReadUnstarted;
@@ -116,8 +114,7 @@ public class FullDuplexMsgWorker {
 	 * @return a boolean stating whether the invariant is maintained.
 	 */
 	private boolean invariant() {
-		return inBuffers != null && outBuffers != null
-				&& (inBuffers[0].capacity() > 0)
+		return inBuffers != null && outBuffers != null && (inBuffers[0].capacity() > 0)
 				&& (outBuffers[0].capacity() > 0) && rwChan != null;
 	}
 
@@ -155,8 +152,8 @@ public class FullDuplexMsgWorker {
 	 * @throws IOException
 	 *             the exception thrown in case of IO problem.
 	 */
-	public long sendMsg(final int type, final int identity, final int seqNumber,
-			final Serializable s) throws IOException {
+	public long sendMsg(final int type, final int identity, final int seqNumber, final Serializable s)
+			throws IOException {
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
 		int size;
 		ObjectOutputStream oo = new ObjectOutputStream(bo);
@@ -231,7 +228,7 @@ public class FullDuplexMsgWorker {
 					}
 				} catch (IOException e) {
 					if (Thread.interrupted()) {
-						return ReadMessageStatus.ChannelClosed; 
+						return ReadMessageStatus.ChannelClosed;
 					}
 					COMM.warn(e.getLocalizedMessage());
 					readState = ReadMessageStatus.ChannelClosed;
@@ -251,8 +248,7 @@ public class FullDuplexMsgWorker {
 			}
 			inBuffers[0].flip();
 			if (LOG_ON && COMM.isTraceEnabled()) {
-				COMM.trace("Position and limit : " + inBuffers[0].position()
-						+ " " + inBuffers[0].limit());
+				COMM.trace("Position and limit : " + inBuffers[0].position() + " " + inBuffers[0].limit());
 			}
 			inType = inBuffers[0].getInt();
 			inIdentity = inBuffers[0].getInt();
@@ -289,7 +285,7 @@ public class FullDuplexMsgWorker {
 					}
 				} catch (IOException e) {
 					if (Thread.interrupted()) {
-						return ReadMessageStatus.ChannelClosed; 
+						return ReadMessageStatus.ChannelClosed;
 					}
 					COMM.warn(e.getLocalizedMessage());
 					readState = ReadMessageStatus.ChannelClosed;
@@ -307,8 +303,7 @@ public class FullDuplexMsgWorker {
 				}
 			}
 			if (LOG_ON && COMM.isTraceEnabled()) {
-				COMM.trace("Position and capacity : " + inBuffers[1].position()
-						+ " " + inBuffers[1].capacity());
+				COMM.trace("Position and capacity : " + inBuffers[1].position() + " " + inBuffers[1].capacity());
 			}
 			if (inBuffers[1].position() == inBuffers[1].capacity()) {
 				readState = ReadMessageStatus.ReadDataCompleted;
@@ -334,8 +329,7 @@ public class FullDuplexMsgWorker {
 				inBuffers[1].flip();
 				byte[] cpBb = new byte[inBuffers[1].limit()];
 				inBuffers[1].get(cpBb);
-				ByteArrayInputStream bi = new ByteArrayInputStream(
-						inBuffers[1].array());
+				ByteArrayInputStream bi = new ByteArrayInputStream(inBuffers[1].array());
 				ObjectInputStream oi = new ObjectInputStream(bi);
 				res = (Serializable) oi.readObject();
 				oi.close();

@@ -1,5 +1,4 @@
 
-
 /**
 This file is part of the muDEBS middleware.
 
@@ -28,73 +27,70 @@ import java.nio.channels.SelectionKey;
 import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
-*
-* @author Denis Conan
-*
-* @param <S>
-
+ *
+ * @author Denis Conan
+ *
+ * @param <S>
+ * 
  *            the type of the state of the entity that has to receive the
-
+ * 
  *            delayed message.
-* @param <C>
-
+ * @param <C>
+ * 
  *            the type of the content of the delayed message.
-*/
-public class TreatDelayedMessage<S extends AbstractState, C extends AbstractContent>
-   implements Runnable {
- /**
-  * the state of the entity that has to receive this delayed message.
-  */
- private S state;
- /**
-  * the content of the message.
-  */
- private C content;
- /**
-  * the selection from which the message should be received later.
-  */
- private SelectionKey key;
- /**
-  * the delay.
-  */
- private static final long DELAY = 50;
+ */
+public class TreatDelayedMessage<S extends AbstractState, C extends AbstractContent> implements Runnable {
+	/**
+	 * the state of the entity that has to receive this delayed message.
+	 */
+	private S state;
+	/**
+	 * the content of the message.
+	 */
+	private C content;
+	/**
+	 * the selection from which the message should be received later.
+	 */
+	private SelectionKey key;
+	/**
+	 * the delay.
+	 */
+	private static final long DELAY = 50;
 
- /**
-  * the constructor.
-  *
-  * @param state
- 
- *            the state of the receiver.
-  * @param content
- 
- *            the content of the delayed message.
-  * @param key
- 
- *            the selection from which the message should be received later.
-  */
- public TreatDelayedMessage(final S state, final C content,
-     final SelectionKey key) {
-   this.state = state;
-   this.content = content;
-   this.key = key;
- }
+	/**
+	 * the constructor.
+	 *
+	 * @param state
+	 * 
+	 *            the state of the receiver.
+	 * @param content
+	 * 
+	 *            the content of the delayed message.
+	 * @param key
+	 * 
+	 *            the selection from which the message should be received later.
+	 */
+	public TreatDelayedMessage(final S state, final C content, final SelectionKey key) {
+		this.state = state;
+		this.content = content;
+		this.key = key;
+	}
 
- @Override
- public void run() {
-   try {
-     Thread.sleep(DELAY);
-   } catch (InterruptedException e) {
-     e.printStackTrace();
-     return;
-   }
-   // TODO your treatment here
-  
-   Interceptor.setInterceptionEnabled(true);
-   if (content instanceof ElectionTokenContent)
-   {
-     chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.executeOrIntercept((chat.server.State) state, content);
-   }
-   
- }
+	@Override
+	public void run() {
+		try {
+			Thread.sleep(DELAY);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return;
+		}
+		// TODO your treatment here
+
+		Interceptor.setInterceptionEnabled(true);
+		if (content instanceof ElectionTokenContent) {
+			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.executeOrIntercept((chat.server.State) state,
+					content);
+		}
+
+	}
 }
-

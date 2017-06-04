@@ -50,18 +50,19 @@ public class State extends AbstractState {
 	/**
 	 * identity of this server.
 	 */
-	
+
 	private int identity;
 	private Server server;
-	
+
 	private SelectionKey electionParentKey;
-	
+
 	private int caw = -1;
 	private int parent = -1;
 	private int win = -1;
 	private int rec = 0;
 	private int lrec = 0;
 	private String status = "dormant";
+
 	public int getCaw() {
 		return caw;
 	}
@@ -128,12 +129,12 @@ public class State extends AbstractState {
 	 * @param identity
 	 *            the identity of this server.
 	 */
-	public State(final int identity , Server serv) {
+	public State(final int identity, Server serv) {
 		this.identity = identity;
 		allServerWorkers = new HashMap<>();
 		allClientWorkers = new HashMap<>();
 		clientSeqNumbers = new HashMap<>();
-		this.setServer(serv) ;
+		this.setServer(serv);
 		assert invariant();
 	}
 
@@ -143,8 +144,7 @@ public class State extends AbstractState {
 	 * @return a boolean stating whether the invariant is maintained.
 	 */
 	public boolean invariant() {
-		return allServerWorkers != null && allClientWorkers != null
-				&& clientSeqNumbers != null;
+		return allServerWorkers != null && allClientWorkers != null && clientSeqNumbers != null;
 	}
 
 	/**
@@ -157,7 +157,7 @@ public class State extends AbstractState {
 	}
 
 	public SelectionKey getElectionParentKey() {
-		
+
 		return electionParentKey;
 	}
 
