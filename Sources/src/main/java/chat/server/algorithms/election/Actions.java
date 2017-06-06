@@ -21,12 +21,10 @@ Contributor(s):
  */
 package chat.server.algorithms.election;
 
-import static chat.common.Log.GEN;
-import static chat.common.Log.LOG_ON;
 import static chat.common.Log.ELECTION;
-import static chat.common.Log.*;
+import static chat.common.Log.LOGGER_NAME_ELECTION;
+import static chat.common.Log.LOG_ON;
 
-import java.awt.SecondaryLoop;
 import java.io.IOException;
 
 import org.apache.log4j.Level;
@@ -84,7 +82,7 @@ public final class Actions {
 				try {
 					state.getServer().sendToAllServersExceptOne(state.getElectionParentKey(),
 							Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber,
-							new ElectionTokenContent(content.getSender(), content.getInitiator()));
+							new ElectionTokenContent(state.getIdentity(), content.getInitiator()));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

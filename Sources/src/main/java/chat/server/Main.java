@@ -23,7 +23,7 @@ package chat.server;
 
 import static chat.common.Log.GEN;
 import static chat.common.Log.LOG_ON;
-import static chat.common.Log.ELECTION;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;

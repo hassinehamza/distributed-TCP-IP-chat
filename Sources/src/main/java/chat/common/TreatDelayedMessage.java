@@ -75,7 +75,7 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 		this.content = content;
 		this.key = key;
 	}
-
+	
 	@Override
 	public void run() {
 		try {
@@ -85,9 +85,9 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 			return;
 		}
 		// TODO your treatment here
-
 		Interceptor.setInterceptionEnabled(true);
 		if (content instanceof ElectionTokenContent) {
+		((chat.server.State) state).currKey = key;
 			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.executeOrIntercept((chat.server.State) state,
 					content);
 		}

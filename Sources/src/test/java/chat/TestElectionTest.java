@@ -1,5 +1,6 @@
 package chat;
 
+
 import chat.common.Log;
 import chat.common.Scenario;
 import chat.server.Server;
@@ -29,12 +30,15 @@ public class TestElectionTest extends Scenario {
 		sleep(500);
 		Server s6 = instanciateAServer("5 localhost 2");
 		sleep(500);
-
-		emulateAnInputLineFromTheConsoleForAServer(s1, "hi");
-		emulateAnInputLineFromTheConsoleForAServer(s2, "hello");
-
-		Assert.assertEquals("leader" , s1.getState().getStatus() );
-		Assert.assertEquals("non-leader" , s2.getState().getStatus() );
+		//Interceptor.setInterceptionEnabled(true);
+		sleep(500);
+		emulateAnInputLineFromTheConsoleForAServer(s3, "Initiator");
+		emulateAnInputLineFromTheConsoleForAServer(s5, "Initiator");
+		emulateAnInputLineFromTheConsoleForAServer(s2, "Initiator");
+		emulateAnInputLineFromTheConsoleForAServer(s4, "Initiator");
+		sleep(8000);
+		Assert.assertEquals("non-leader" , s1.getState().getStatus() );
+		Assert.assertEquals("leader" , s2.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s3.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s4.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s5.getState().getStatus() );

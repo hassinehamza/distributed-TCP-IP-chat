@@ -38,7 +38,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 import chat.common.FullDuplexMsgWorker;
-import chat.common.Interceptor;
 import chat.server.algorithms.election.Algorithm;
 import chat.server.algorithms.election.ElectionTokenContent;
 
@@ -207,19 +206,13 @@ public class Server {
 
 		if (line == null) {
 			throw new IllegalArgumentException("no command line");
-		} else {
-
-			if (LOG_ON && GEN.isDebugEnabled()) {
-
-				GEN.debug("new command line on console");
-
-			}
+		}else if(line.equals("Initiator")){
 			synchronized (state) {
 				state.setStatus("Initiator");
 				state.setCaw(state.getIdentity());
-				System.out.println("status :" + state.getStatus());
+				//System.out.println("status :" + state.getStatus());
 				try {
-					Thread.sleep(10000);
+					//Thread.sleep(10000);
 
 					sendToAllServers(Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber,
 							new ElectionTokenContent(state.getIdentity(), state.getIdentity()));
@@ -227,12 +220,18 @@ public class Server {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
+			}
+			
+		} 
+		else {
+
+			if (LOG_ON && GEN.isDebugEnabled()) {
+
+				GEN.debug("new command line on console");
 
 			}
+		
 
 		}
 
