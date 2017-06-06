@@ -45,25 +45,32 @@ public class ElectionTokenContent extends AbstractContent {
 	 */
 	private static final long serialVersionUID = 1L;
 	private int sender, initiator;
+
 	/**
 	 * constructs the content of a leader election message.
 	 */
-	public ElectionTokenContent() {
-		sender = 0;
-		initiator = 0;
+	public ElectionTokenContent(int sender, int initiator) {
+		this.initiator = initiator;
+		this.sender = sender;
+
 	}
+
 	public int getSender() {
 		return sender;
 	}
+
 	public void setSender(int sender) {
 		this.sender = sender;
 	}
+
 	public int getInitiator() {
 		return initiator;
 	}
+
 	public void setInitiator(int initiator) {
 		this.initiator = initiator;
 	}
+
 	public String toString() {
 		return "";
 	}

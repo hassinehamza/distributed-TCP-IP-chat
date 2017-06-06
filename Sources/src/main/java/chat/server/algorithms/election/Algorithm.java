@@ -70,8 +70,7 @@ public enum Algorithm implements Action<State> {
 		 *            the message to treat.
 		 */
 		public void execute(final State state, final AbstractContent content) {
-			Actions.receiveLeaderContent(state,
-					(ElectionLeaderContent) content);
+			Actions.receiveLeaderContent(state, (ElectionLeaderContent) content);
 		}
 	};
 
@@ -114,8 +113,7 @@ public enum Algorithm implements Action<State> {
 	 */
 	Algorithm(final Class<? extends AbstractContent> contentClass) {
 		this.actionIndex = chat.common.Action.OFFSET_SERVER_ALGORITHMS
-				+ chat.server.algorithms.ListOfAlgorithms.OFFSET_ELECTION_ALGORITHM
-				+ ordinal();
+				+ chat.server.algorithms.ListOfAlgorithms.OFFSET_ELECTION_ALGORITHM + ordinal();
 		this.contentClass = contentClass;
 	}
 

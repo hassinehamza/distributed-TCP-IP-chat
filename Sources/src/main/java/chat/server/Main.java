@@ -76,6 +76,8 @@ public final class Main {
 					+ " <list of pairs hostname servernumber>");
 			return;
 		}
+		
+		
 		server = new Server(args);
 		server.startThreadReadMessagesFromNetwork();
 		BufferedReader bufin = new BufferedReader(
@@ -88,5 +90,6 @@ public final class Main {
 			}
 			server.treatConsoleInput(consoleMsg);
 		}
+		
 	}
 }

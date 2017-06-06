@@ -1,3 +1,4 @@
+
 /**
 This file is part of the muDEBS middleware.
 
@@ -10,19 +11,21 @@ the Free Software Foundation, either version 3 of the License, or
 
 This software platform is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 GNU Lesser General Public License for more details.
 
 You should have received a copy of the GNU Lesser General Public License
-along with the muDEBS platform. If not, see <http://www.gnu.org/licenses/>.
+along with the muDEBS platform. If not, see <http://www.gnu.org/licenses/ >.
 
 Initial developer(s): Denis Conan
 Contributor(s):
- */
+*/
 package chat.common;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
  * This class contains the interception of the calls to the actions to receive
@@ -31,7 +34,7 @@ import java.util.List;
  * {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
  * redirects the receipt of the message to the method
  * {@link #intercept(AbstractState, AbstractContent)}.
- * 
+ *
  * @author Denis Conan
  */
 public final class Interceptor {
@@ -57,7 +60,7 @@ public final class Interceptor {
 
 	/**
 	 * gets the boolean value of the attribute {@link #interceptionEnabled}.
-	 * 
+	 *
 	 * @return the boolean value.
 	 */
 	public static boolean isInterceptionEnabled() {
@@ -66,12 +69,12 @@ public final class Interceptor {
 
 	/**
 	 * sets the boolean value of the attribute {@link #interceptionEnabled}.
-	 * 
+	 *
 	 * @param interceptionEnabled
+	 * 
 	 *            the new boolean value.
 	 */
-	public static void setInterceptionEnabled(
-			final boolean interceptionEnabled) {
+	public static void setInterceptionEnabled(final boolean interceptionEnabled) {
 		Interceptor.interceptionEnabled = interceptionEnabled;
 	}
 
@@ -82,18 +85,30 @@ public final class Interceptor {
 	 * {@link chat.common.Action#executeOrIntercept(AbstractState, AbstractContent)}
 	 * when the interception mechanism is activated, that is
 	 * {@link #isInterceptionEnabled} is {@code true}.
-	 * 
+	 *
 	 * @param state
+	 * 
 	 *            the state of the receiver.
 	 * @param msg
+	 * 
 	 *            the message to schedule.
 	 * @return the set of messages to treat now.
 	 */
-	public static List<AbstractContent> intercept(final AbstractState state,
-			final AbstractContent msg) {
-		// TODO replace or adapt the following lines
+	public static List<AbstractContent> intercept(final AbstractState state, final AbstractContent msg) {
 		ArrayList<AbstractContent> set = new ArrayList<>();
-		set.add(msg);
+		if (msg instanceof ElectionTokenContent) {
+			ElectionTokenContent content = (ElectionTokenContent) msg;
+			chat.server.State s = (chat.server.State) state;
+			if (content.getInitiator() == content.getSender()) {
+
+				(new TreatDelayedMessage<chat.server.State, ElectionTokenContent>(s, content, s.currKey)).run();
+			} else {
+				set.add(msg);
+			}
+		} else {
+			set.add(msg);
+		}
 		return set;
 	}
+
 }

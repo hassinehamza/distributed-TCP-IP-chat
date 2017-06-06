@@ -38,6 +38,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 import chat.common.FullDuplexMsgWorker;
+import chat.server.algorithms.election.Algorithm;
+import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
  * This class defines server object. The server ojbect connects to existing chat
@@ -107,7 +109,7 @@ public class Server {
 	public Server(final String[] args) {
 		int identity = Integer.parseInt(args[0]);
 		int portnum = BASE_PORTNB_LISTEN_CLIENT + Integer.parseInt(args[0]);
-		state = new State(identity);
+		state = new State(identity, this);
 		InetSocketAddress rcvAddressClient;
 		InetSocketAddress rcvAddressServer;
 		try {
@@ -121,26 +123,20 @@ public class Server {
 			listenChanClient = ServerSocketChannel.open();
 			listenChanClient.configureBlocking(false);
 		} catch (IOException e) {
-			throw new IllegalStateException(
-					"cannot set the blocking option to a server socket");
+			throw new IllegalStateException("cannot set the blocking option to a server socket");
 		}
 		try {
 			listenChanServer = ServerSocketChannel.open();
 		} catch (IOException e) {
-			throw new IllegalStateException("cannot open the server socket"
-					+ " for accepting server connections");
+			throw new IllegalStateException("cannot open the server socket" + " for accepting server connections");
 		}
 		try {
 			rcvAddressClient = new InetSocketAddress(portnum);
-			listenChanClient.setOption(StandardSocketOptions.SO_REUSEADDR,
-					true);
-			rcvAddressServer = new InetSocketAddress(
-					portnum + OFFSET_PORTNB_LISTEN_SERVER);
-			listenChanServer.setOption(StandardSocketOptions.SO_REUSEADDR,
-					true);
+			listenChanClient.setOption(StandardSocketOptions.SO_REUSEADDR, true);
+			rcvAddressServer = new InetSocketAddress(portnum + OFFSET_PORTNB_LISTEN_SERVER);
+			listenChanServer.setOption(StandardSocketOptions.SO_REUSEADDR, true);
 		} catch (IOException e) {
-			throw new IllegalStateException(
-					"cannot set the SO_REUSEADDR option");
+			throw new IllegalStateException("cannot set the SO_REUSEADDR option");
 		}
 		try {
 			listenChanClient.bind(rcvAddressClient);
@@ -157,29 +153,22 @@ public class Server {
 		SelectionKey acceptClientKey = null;
 		SelectionKey acceptServerKey = null;
 		try {
-			acceptClientKey = listenChanClient.register(selector,
-					SelectionKey.OP_ACCEPT);
-			acceptServerKey = listenChanServer.register(selector,
-					SelectionKey.OP_ACCEPT);
+			acceptClientKey = listenChanClient.register(selector, SelectionKey.OP_ACCEPT);
+			acceptServerKey = listenChanServer.register(selector, SelectionKey.OP_ACCEPT);
 		} catch (ClosedChannelException e) {
 			throw new IllegalStateException("cannot register a server socket");
 		}
 		if (LOG_ON && COMM.isInfoEnabled()) {
-			COMM.info("  listenChanClient ok on port "
-					+ listenChanClient.socket().getLocalPort());
-			COMM.info("  listenChanServer ok on port "
-					+ listenChanServer.socket().getLocalPort());
+			COMM.info("  listenChanClient ok on port " + listenChanClient.socket().getLocalPort());
+			COMM.info("  listenChanServer ok on port " + listenChanServer.socket().getLocalPort());
 		}
-		runnableToRcvMsgs = new ReadMessagesFromNetwork(this, selector,
-				acceptClientKey, listenChanClient, acceptServerKey,
-				listenChanServer, state);
+		runnableToRcvMsgs = new ReadMessagesFromNetwork(this, selector, acceptClientKey, listenChanClient,
+				acceptServerKey, listenChanServer, state);
 		threadToRcvMsgs = new Thread(runnableToRcvMsgs);
 		for (int i = 1; i < args.length; i = i + 2) {
 			try {
 				addServer(args[i],
-						(BASE_PORTNB_LISTEN_CLIENT
-								+ Integer.parseInt(args[i + 1])
-								+ OFFSET_PORTNB_LISTEN_SERVER));
+						(BASE_PORTNB_LISTEN_CLIENT + Integer.parseInt(args[i + 1]) + OFFSET_PORTNB_LISTEN_SERVER));
 			} catch (IOException e) {
 				COMM.error(e.getLocalizedMessage());
 				e.printStackTrace();
@@ -195,8 +184,8 @@ public class Server {
 	 * @return a boolean stating whether the invariant is maintained.
 	 */
 	public boolean invariant() {
-		return clientNumber >= 0 && state != null && runnableToRcvMsgs != null
-				&& threadToRcvMsgs != null && state.invariant();
+		return clientNumber >= 0 && state != null && runnableToRcvMsgs != null && threadToRcvMsgs != null
+				&& state.invariant();
 	}
 
 	/**
@@ -214,18 +203,47 @@ public class Server {
 	 *            the content of the message
 	 */
 	public void treatConsoleInput(final String line) {
+
 		if (line == null) {
 			throw new IllegalArgumentException("no command line");
-		} else {
-			if (LOG_ON && GEN.isDebugEnabled()) {
-				GEN.debug("new command line on console");
+		}else if(line.equals("Initiator")){
+			synchronized (state) {
+				state.setStatus("Initiator");
+				state.setCaw(state.getIdentity());
+				//System.out.println("status :" + state.getStatus());
+				try {
+					//Thread.sleep(10000);
+
+					sendToAllServers(Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber,
+							new ElectionTokenContent(state.getIdentity(), state.getIdentity()));
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			
+		} 
+		else {
+
+			if (LOG_ON && GEN.isDebugEnabled()) {
+
+				GEN.debug("new command line on console");
+
+			}
+		
+
 		}
+
 		if (line.equals("quit")) {
 			threadToRcvMsgs.interrupt();
 			Thread.currentThread().interrupt();
 			return;
 		}
+	}
+
+	public State getState() {
+		return state;
 	}
 
 	/**
@@ -240,14 +258,12 @@ public class Server {
 	 * @throws IOException
 	 *             the exception thrown in case of communication problem.
 	 */
-	public void addServer(final String host, final int port)
-			throws IOException {
+	public void addServer(final String host, final int port) throws IOException {
 		Socket rwSock;
 		SocketChannel rwChan;
 		InetSocketAddress rcvAddress;
 		if (LOG_ON && COMM.isInfoEnabled()) {
-			COMM.info("Opening connection with server on host " + host
-					+ " on port " + port);
+			COMM.info("Opening connection with server on host " + host + " on port " + port);
 		}
 		InetAddress destAddr = InetAddress.getByName(host);
 		rwChan = SocketChannel.open();
@@ -258,13 +274,11 @@ public class Server {
 		rwSock.connect(rcvAddress);
 		FullDuplexMsgWorker worker = new FullDuplexMsgWorker(rwChan);
 		worker.configureNonBlocking();
-		SelectionKey serverKey = rwChan.register(selector,
-				SelectionKey.OP_READ);
+		SelectionKey serverKey = rwChan.register(selector, SelectionKey.OP_READ);
 		synchronized (state) {
 			state.allServerWorkers.put(serverKey, worker);
 			if (LOG_ON && COMM.isDebugEnabled()) {
-				COMM.debug("allServerWorkers.size() = "
-						+ state.allServerWorkers.size());
+				COMM.debug("allServerWorkers.size() = " + state.allServerWorkers.size());
 			}
 		}
 	}
@@ -279,8 +293,7 @@ public class Server {
 	 * @throws IOException
 	 *             the exception thrown in case of communication problem.
 	 */
-	public void acceptNewServer(final ServerSocketChannel sc)
-			throws IOException {
+	public void acceptNewServer(final ServerSocketChannel sc) throws IOException {
 		SocketChannel rwChan;
 		SelectionKey newKey;
 		rwChan = sc.accept();
@@ -292,8 +305,7 @@ public class Server {
 				synchronized (state) {
 					state.allServerWorkers.put(newKey, worker);
 					if (LOG_ON && COMM.isDebugEnabled()) {
-						COMM.debug("allServerWorkers.size() = "
-								+ state.allServerWorkers.size());
+						COMM.debug("allServerWorkers.size() = " + state.allServerWorkers.size());
 					}
 				}
 			} catch (ClosedChannelException e) {
@@ -319,8 +331,7 @@ public class Server {
 	 * @throws IOException
 	 *             the exception thrown in case of communication problem.
 	 */
-	public void acceptNewClient(final ServerSocketChannel sc)
-			throws IOException {
+	public void acceptNewClient(final ServerSocketChannel sc) throws IOException {
 		SocketChannel rwChan;
 		SelectionKey newKey;
 		rwChan = sc.accept();
@@ -332,9 +343,7 @@ public class Server {
 				synchronized (state) {
 					state.allClientWorkers.put(newKey, worker);
 					worker.sendMsg(0, state.getIdentity(), state.seqNumber,
-							Integer.valueOf(
-									state.getIdentity() * OFFSET_ID_CLIENT
-											+ clientNumber));
+							Integer.valueOf(state.getIdentity() * OFFSET_ID_CLIENT + clientNumber));
 					clientNumber++;
 				}
 			} catch (ClosedChannelException e) {
@@ -361,8 +370,8 @@ public class Server {
 	 * @throws IOException
 	 *             the communication exception thrown when sending the message.
 	 */
-	public void sendToAllServers(final int type, final int identity,
-			final int seqNumber, final Serializable msg) throws IOException {
+	public void sendToAllServers(final int type, final int identity, final int seqNumber, final Serializable msg)
+			throws IOException {
 		synchronized (state) {
 			state.seqNumber++;
 			// send to all the servers, thus first argument is null
@@ -389,13 +398,11 @@ public class Server {
 	 * @throws IOException
 	 *             the communication exception thrown when sending the message.
 	 */
-	public void sendToAServer(final SelectionKey targetKey, final int type,
-			final int identity, final int seqNumber, final Serializable mgg)
-			throws IOException {
+	public void sendToAServer(final SelectionKey targetKey, final int type, final int identity, final int seqNumber,
+			final Serializable mgg) throws IOException {
 		synchronized (state) {
 			state.seqNumber++;
-			FullDuplexMsgWorker sendWorker = state.allServerWorkers
-					.get(targetKey);
+			FullDuplexMsgWorker sendWorker = state.allServerWorkers.get(targetKey);
 			if (sendWorker == null) {
 				COMM.warn("Bad receiver for server key " + targetKey);
 			} else {
@@ -403,8 +410,7 @@ public class Server {
 			}
 		}
 		if (LOG_ON && COMM.isInfoEnabled()) {
-			COMM.info("Send message of type " + type + " to server of identity "
-					+ identity);
+			COMM.info("Send message of type " + type + " to server of identity " + identity);
 		}
 	}
 
@@ -427,9 +433,8 @@ public class Server {
 	 * @throws IOException
 	 *             the communication exception thrown when sending the message.
 	 */
-	public void sendToAllServersExceptOne(final SelectionKey exceptKey,
-			final int type, final int identity, final int seqNumber,
-			final Serializable s) throws IOException {
+	public void sendToAllServersExceptOne(final SelectionKey exceptKey, final int type, final int identity,
+			final int seqNumber, final Serializable s) throws IOException {
 		synchronized (state) {
 			state.seqNumber++;
 			forwardServers(exceptKey, type, identity, seqNumber, s);
@@ -455,9 +460,8 @@ public class Server {
 	 * @throws IOException
 	 *             the communication exception thrown when sending the message.
 	 */
-	void forward(final SelectionKey exceptKey, final int type,
-			final int identity, final int seqNumber, final Serializable msg)
-			throws IOException {
+	void forward(final SelectionKey exceptKey, final int type, final int identity, final int seqNumber,
+			final Serializable msg) throws IOException {
 		forwardServers(exceptKey, type, identity, seqNumber, msg);
 		forwardClients(exceptKey, type, identity, seqNumber, msg);
 	}
@@ -481,16 +485,14 @@ public class Server {
 	 * @throws IOException
 	 *             the communication exception thrown when sending the message.
 	 */
-	private void forwardServers(final SelectionKey exceptKey, final int type,
-			final int identity, final int seqNumber, final Serializable msg)
-			throws IOException {
+	private void forwardServers(final SelectionKey exceptKey, final int type, final int identity, final int seqNumber,
+			final Serializable msg) throws IOException {
 		int nbServers = 0;
 		synchronized (state) {
 			for (SelectionKey target : state.allServerWorkers.keySet()) {
 				if (target == exceptKey) {
 					if (LOG_ON && COMM.isDebugEnabled()) {
-						COMM.debug("do not send to a server "
-								+ "because (target == exceptKey)");
+						COMM.debug("do not send to a server " + "because (target == exceptKey)");
 					}
 					continue;
 				}
@@ -527,21 +529,18 @@ public class Server {
 	 * @throws IOException
 	 *             the communication exception thrown when sending the message.
 	 */
-	private void forwardClients(final SelectionKey exceptKey, final int type,
-			final int identity, final int seqNumber, final Serializable msg)
-			throws IOException {
+	private void forwardClients(final SelectionKey exceptKey, final int type, final int identity, final int seqNumber,
+			final Serializable msg) throws IOException {
 		int nbClients = 0;
 		synchronized (state) {
 			for (SelectionKey target : state.allClientWorkers.keySet()) {
 				if (target == exceptKey) {
 					if (LOG_ON && COMM.isDebugEnabled()) {
-						COMM.debug("do not send to a client "
-								+ "because (target == exceptKey)");
+						COMM.debug("do not send to a client " + "because (target == exceptKey)");
 					}
 					continue;
 				}
-				FullDuplexMsgWorker clientWorker = state.allClientWorkers
-						.get(target);
+				FullDuplexMsgWorker clientWorker = state.allClientWorkers.get(target);
 				if (clientWorker == null) {
 					COMM.warn("Bad receiver for key " + target);
 				} else {

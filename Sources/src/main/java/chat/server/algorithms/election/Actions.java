@@ -21,6 +21,15 @@ Contributor(s):
  */
 package chat.server.algorithms.election;
 
+import static chat.common.Log.ELECTION;
+import static chat.common.Log.LOGGER_NAME_ELECTION;
+import static chat.common.Log.LOG_ON;
+
+import java.io.IOException;
+
+import org.apache.log4j.Level;
+
+import chat.common.Log;
 import chat.server.State;
 
 /**
@@ -37,12 +46,12 @@ public final class Actions {
 	 * avoids the creation of instances.
 	 */
 	private Actions() {
-		State.caw = -1;
-		State.parent = -1;
-		State.win = -1;
-		State.rec = 0;
-		State.lrec = 0;
-		State.status = "dormant";
+
+	}
+
+	static {
+		// whatever code is needed for initialization goes here
+		Log.configureALogger(LOGGER_NAME_ELECTION, Level.INFO);
 	}
 
 	/**
@@ -53,16 +62,62 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message to treat.
 	 */
-	public static void receiveTokenContent(final State state,
-			final ElectionTokenContent content) {
+	public static void receiveTokenContent(final State state, final ElectionTokenContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
-		if(State.caw == -1 || content.getInitiator() < State.caw) {
-			State.caw = content.getInitiator();
-			State.rec = 0;
-			State.parent = content.getSender();
+
+		synchronized (state) {
+			// System.out.println("recu de type token de");
+
+			if (LOG_ON && ELECTION.isInfoEnabled()) {
+				ELECTION.info("recu de type token");
+			}
+
+			if (state.getCaw() == -1 || content.getInitiator() < state.getCaw()) {
+				state.setCaw(content.getInitiator());
+				state.setRec(0);
+				state.setParent(content.getSender());
+				state.setElectionParentKey(state.currKey);
+				try {
+					state.getServer().sendToAllServersExceptOne(state.getElectionParentKey(),
+							Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber,
+							new ElectionTokenContent(state.getIdentity(), content.getInitiator()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+			if (state.getCaw() == content.getInitiator()) {
+				state.setRec(state.getRec() + 1);
+				if (state.getRec() == state.allServerWorkers.size()) {
+					if (state.getCaw() == state.getIdentity()) {
+						try {
+							state.getServer().sendToAllServers(Algorithm.LEADER_MESSAGE.identifier(),
+									state.getIdentity(), state.seqNumber,
+									new ElectionLeaderContent(state.getIdentity(), state.getIdentity()));
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+
+					} else {
+						try {
+							state.getServer().sendToAServer(state.getElectionParentKey(),
+									Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber,
+									new ElectionTokenContent(state.getIdentity(), content.getInitiator()));
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+
+				}
+			}
+
 		}
+
 	}
 
 	/**
@@ -73,10 +128,43 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message to treat.
 	 */
-	public static void receiveLeaderContent(final State state,
-			final ElectionLeaderContent content) {
+	public static void receiveLeaderContent(final State state, final ElectionLeaderContent content) {
 		// TODO to write. Don't forget to use the synchronized statement for
 		// protecting the accesses to state attributes. Please remove this
 		// comment when the method is implemented!
+		synchronized (state) {
+			// System.out.println("recu de type Leader de "+ content.getSender()
+			// );
+			if (LOG_ON && ELECTION.isInfoEnabled()) {
+				ELECTION.info("recu de type Leader");
+			}
+
+			if (state.getLrec() == 0 && state.getIdentity() != content.getInitiator()) {
+				try {
+					state.getServer().sendToAllServers(Algorithm.LEADER_MESSAGE.identifier(), state.getIdentity(),
+							state.seqNumber, new ElectionLeaderContent(state.getIdentity(), content.getInitiator()));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			state.setLrec(state.getLrec() + 1);
+			state.setWin(content.getInitiator());
+			if (state.getLrec() == state.allServerWorkers.size()) {
+				if (state.getWin() == state.getIdentity()) {
+					state.setStatus("leader");
+					if (LOG_ON && ELECTION.isInfoEnabled()) {
+						ELECTION.info("je suis gagnat");
+					}
+				} else {
+					state.setStatus("non-leader");
+					if (LOG_ON && ELECTION.isInfoEnabled()) {
+						ELECTION.info("je suis perdant");
+					}
+				}
+			}
+
+		}
+
 	}
 }

@@ -25,6 +25,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import chat.server.algorithms.election.ElectionLeaderContent;
+
 /**
  * This class contains the configuration of some logging facilities.
  * 
@@ -77,8 +79,7 @@ public final class Log {
 	/**
 	 * logger object for the election algorithm.
 	 */
-	public static final Logger ELECTION = Logger
-			.getLogger(LOGGER_NAME_ELECTION);
+	public static final Logger ELECTION = Logger.getLogger(LOGGER_NAME_ELECTION);
 
 	/**
 	 * static configuration, which can be changed by command line options.
@@ -105,8 +106,7 @@ public final class Log {
 	 * @param level
 	 *            the level.
 	 */
-	public static void configureALogger(final String loggerName,
-			final Level level) {
+	public static void configureALogger(final String loggerName, final Level level) {
 		if (loggerName == null) {
 			return;
 		}
