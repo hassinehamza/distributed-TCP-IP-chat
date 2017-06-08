@@ -36,7 +36,7 @@ public class TestElectionTest extends Scenario {
 		emulateAnInputLineFromTheConsoleForAServer(s5, "Initiator");
 		emulateAnInputLineFromTheConsoleForAServer(s2, "Initiator");
 		emulateAnInputLineFromTheConsoleForAServer(s4, "Initiator");
-		sleep(8000);
+		sleep(15000);
 		Assert.assertEquals("non-leader" , s1.getState().getStatus() );
 		Assert.assertEquals("leader" , s2.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s3.getState().getStatus() );
@@ -55,7 +55,7 @@ public class TestElectionTest extends Scenario {
 		emulateAnInputLineFromTheConsoleForAServer(s5, "quit");
 		sleep(100);
 		emulateAnInputLineFromTheConsoleForAServer(s6, "quit");
-		sleep(100);
+		sleep(1000);
 
 	}
 
