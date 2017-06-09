@@ -1,14 +1,16 @@
 package chat;
 
 
-import chat.common.Log;
-import chat.common.Scenario;
-import chat.server.Server;
+import static chat.common.Log.LOGGER_NAME_TEST;
 
-import static chat.common.Log.*;
 import org.apache.log4j.Level;
 import org.junit.Assert;
 import org.junit.Test;
+
+import chat.common.Interceptor;
+import chat.common.Log;
+import chat.common.Scenario;
+import chat.server.Server;
 
 public class TestElectionTest extends Scenario {
 
@@ -30,7 +32,7 @@ public class TestElectionTest extends Scenario {
 		sleep(500);
 		Server s6 = instanciateAServer("5 localhost 2");
 		sleep(500);
-		//Interceptor.setInterceptionEnabled(true);
+		Interceptor.setInterceptionEnabled(true);
 		sleep(500);
 		emulateAnInputLineFromTheConsoleForAServer(s3, "Initiator");
 		emulateAnInputLineFromTheConsoleForAServer(s5, "Initiator");

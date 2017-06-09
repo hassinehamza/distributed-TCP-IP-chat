@@ -39,7 +39,8 @@ import chat.server.algorithms.election.ElectionTokenContent;
  * 
  *            the type of the content of the delayed message.
  */
-public class TreatDelayedMessage<S extends AbstractState, C extends AbstractContent> implements Runnable {
+public class TreatDelayedMessage<S extends AbstractState, C extends AbstractContent>
+		implements Runnable {
 	/**
 	 * the state of the entity that has to receive this delayed message.
 	 */
@@ -70,12 +71,13 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 	 * 
 	 *            the selection from which the message should be received later.
 	 */
-	public TreatDelayedMessage(final S state, final C content, final SelectionKey key) {
+	public TreatDelayedMessage(final S state, final C content,
+			final SelectionKey key) {
 		this.state = state;
 		this.content = content;
 		this.key = key;
 	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -84,12 +86,10 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 			e.printStackTrace();
 			return;
 		}
-		// TODO your treatment here
-		Interceptor.setInterceptionEnabled(true);
 		if (content instanceof ElectionTokenContent) {
-		((chat.server.State) state).currKey = key;
-			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.executeOrIntercept((chat.server.State) state,
-					content);
+			((chat.server.State) state).currKey = key;
+			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE
+					.execute((chat.server.State) state, content);
 		}
 
 	}
