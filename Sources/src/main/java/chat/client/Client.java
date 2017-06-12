@@ -33,6 +33,7 @@ import java.nio.channels.SocketChannel;
 
 import chat.client.algorithms.chat.Algorithm;
 import chat.client.algorithms.chat.ChatMessageContent;
+import chat.common.VectorClock;
 
 /**
  * This class contains the logic of a client of the chat application. It
@@ -155,10 +156,13 @@ public class Client {
 		} else {
 			synchronized (state) {
 				ChatMessageContent msg = new ChatMessageContent(state.identity,
-						line);
+						line, state.horloge);
 				if (LOG_ON && COMM.isTraceEnabled()) {
 					COMM.trace("sending chat message: " + msg);
 				}
+				//Vp = Vp + 1p
+				state.horloge.incrementEntry(state.identity);
+
 				// The sequence number is irrelevant (assigned to 0) for client
 				// messages sent to the server, but will be assigned by the
 				// server to control the propagation of client messages.
