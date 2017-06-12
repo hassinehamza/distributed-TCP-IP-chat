@@ -25,6 +25,7 @@ package chat.client;
 import chat.common.AbstractState;
 import chat.common.VectorClock;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import chat.client.algorithms.chat.ChatMessageContent;
@@ -55,5 +56,5 @@ public class State extends AbstractState {
 	
 	public VectorClock horloge = new VectorClock();  
 	
-	public List<ChatMessageContent> MsgBag;
+	public List<ChatMessageContent> MsgBag = new ArrayList<ChatMessageContent>();
 }
