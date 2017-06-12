@@ -53,7 +53,7 @@ public class State extends AbstractState {
 	 */
 	public int nbChatMessageContentSent;
 	
-	public VectorClock horloge;  
+	public VectorClock horloge = new VectorClock();  
 	
 	public List<ChatMessageContent> MsgBag;
 }
