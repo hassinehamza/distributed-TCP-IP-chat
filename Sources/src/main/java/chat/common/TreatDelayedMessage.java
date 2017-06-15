@@ -23,6 +23,7 @@ package chat.common;
 
 import java.nio.channels.SelectionKey;
 
+import chat.client.algorithms.chat.ChatMessageContent;
 import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
@@ -83,10 +84,13 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 			return;
 		}
 		
-		Interceptor.setInterceptionEnabled(true);
+//		Interceptor.setInterceptionEnabled(true);
  		if (content instanceof ElectionTokenContent) {
 		((chat.server.State) state).currKey = key;
- 			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.executeOrIntercept((chat.server.State) state,
+ 			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.execute((chat.server.State) state,
+ 					content);
+ 		} else if (content instanceof ChatMessageContent) {
+ 			chat.client.algorithms.chat.Algorithm.CHAT_MESSAGE.execute((chat.client.State) state, 
  					content);
  		}
 
