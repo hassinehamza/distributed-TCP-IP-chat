@@ -55,24 +55,31 @@ public final class Actions {
 		synchronized (state) {
 			state.nbChatMessageContentReceived++;
 			state.MsgBag.add(content);
-			for(int i = 0; i<state.MsgBag.size(); i++){
-				ChatMessageContent msg = state.MsgBag.get(i);
-				int q = msg.getSender();
-				boolean condition = state.horloge.isPrecededByAndFIFO(msg.getHorloge(),q);
-				condition |= msg.getHorloge().getEntry(q).equals(state.horloge.getEntry(q)+1);
-				condition &= (q == state.identity);
-				 
-				if(condition){
-					System.out.println("client "
-							+ state.identity % Server.OFFSET_ID_CLIENT + " of server "
-							+ state.identity / Server.OFFSET_ID_CLIENT + " receives "
-							+ content);
-					state.MsgBag.remove(i);
-					if(q!=state.identity){
-						state.horloge.incrementEntry(q);
+			boolean exist = true;
+			while(exist)
+			{
+				exist = false;
+				for(int i = 0; i<state.MsgBag.size(); i++){
+					ChatMessageContent msg = state.MsgBag.get(i);
+					int q = msg.getSender();
+					boolean condition = state.horloge.isPrecededByAndFIFO(msg.getHorloge(),q);
+					condition |= msg.getHorloge().getEntry(q).equals(state.horloge.getEntry(q)+1);
+					condition &= (q == state.identity);
+					 
+					if(condition){
+						exist = true;
+						System.out.println("client "
+								+ state.identity % Server.OFFSET_ID_CLIENT + " of server "
+								+ state.identity / Server.OFFSET_ID_CLIENT + " receives "
+								+ content);
+						state.MsgBag.remove(i);
+						if(q!=state.identity){
+							state.horloge.incrementEntry(q);
+						}
 					}
-				}
+				}	
 			}
+				
 		}
 	}
 }

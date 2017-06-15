@@ -61,7 +61,7 @@ public class ReadMessagesFromNetwork extends FullDuplexMsgWorker
 	 * @param chan
 	 *            the socket channel connecting the client to the server.
 	 * @param state
-	 *            the client state ojbect.
+	 *            the client state object.
 	 */
 	public ReadMessagesFromNetwork(final SocketChannel chan,
 			final State state) {
@@ -95,7 +95,7 @@ public class ReadMessagesFromNetwork extends FullDuplexMsgWorker
 	}
 
 	/**
-	 * organises an infinite loop to receive messages from the chat server and
+	 * organizes an infinite loop to receive messages from the chat server and
 	 * to execute the corresponding action. The action is searched for in the
 	 * enumeration {@link chat.client.algorithms.ListOfAlgorithms} through the
 	 * method

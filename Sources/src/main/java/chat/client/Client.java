@@ -115,7 +115,7 @@ public class Client {
 	/**
 	 * checks the invariant of the class.
 	 * 
-	 * NB: the method is final so that the method is not overriden in potential
+	 * NB: the method is final so that the method is not overridden in potential
 	 * subclasses because it is called in the constructor.
 	 * 
 	 * @return a boolean stating whether the invariant is maintained.
@@ -126,7 +126,7 @@ public class Client {
 	}
 
 	/**
-	 * starts the thread that is responible for reading messages from the
+	 * starts the thread that is responsible for reading messages from the
 	 * server.
 	 */
 	public void startThreadReadMessagesFromNetwork() {
