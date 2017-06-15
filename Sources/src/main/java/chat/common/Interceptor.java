@@ -100,7 +100,6 @@ public final class Interceptor {
 			ElectionTokenContent content = (ElectionTokenContent) msg;
 			chat.server.State s = (chat.server.State) state;
 			if (content.getInitiator() == content.getSender()) {
-
 				(new TreatDelayedMessage<chat.server.State, ElectionTokenContent>(s, content, s.currKey)).run();
 			} else {
 				set.add(msg);
@@ -108,6 +107,14 @@ public final class Interceptor {
 		} else {
 			set.add(msg);
 		}
+		
+		
+		
+			
+			
+		
+		
+		
 		return set;
 	}
 

@@ -23,6 +23,8 @@ package chat.common;
 
 import java.nio.channels.SelectionKey;
 
+import chat.server.algorithms.election.ElectionTokenContent;
+
 /**
  * 
  * @author Denis Conan
@@ -80,6 +82,13 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 			e.printStackTrace();
 			return;
 		}
-		// TODO add your treatment
+		
+		Interceptor.setInterceptionEnabled(true);
+ 		if (content instanceof ElectionTokenContent) {
+		((chat.server.State) state).currKey = key;
+ 			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.executeOrIntercept((chat.server.State) state,
+ 					content);
+ 		}
+
 	}
 }
