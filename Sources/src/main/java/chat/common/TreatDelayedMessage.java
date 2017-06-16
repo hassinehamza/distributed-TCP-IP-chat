@@ -93,6 +93,8 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
  			chat.client.algorithms.chat.Algorithm.CHAT_MESSAGE.execute((chat.client.State) state, 
  					content);
  		}
+ 		
+ 		
 
 	}
 }
