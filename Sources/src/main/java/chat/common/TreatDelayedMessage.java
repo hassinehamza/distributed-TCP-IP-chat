@@ -89,6 +89,8 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
  			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.executeOrIntercept((chat.server.State) state,
  					content);
  		}
+ 		
+ 		
 
 	}
 }

@@ -24,7 +24,7 @@ package chat.common;
 
 import java.util.ArrayList;
 import java.util.List;
-
+8
 import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
