@@ -1,0 +1,32 @@
+vendredi 9 juin
+---------------
+- il reste des avertissements de compilation à résoudre
+  - par exemple des imports inutilisés
+- veuillez formatter votre code avec Eclipse (menu Source/Format)
+  - pour ne pas avoir des lignes trop longues
+  - pour avoir une indentation « standardisée »
+- veuillez retirer les lignes vides dans les méthodes
+- veuillez passer Checkstyle et résoudre les problèmes signalés
+- veuillez retirer les lignes de commentaires qui n'en sont pas
+  - par exemple les anciens System.out.println
+- veuillez retirer les marques TODO au fur et à mesure de l'écriture du code
+- veuillez utiliser un type énuméré pour le statut de l'élection
+- lorsque les tests passent, mettez les niveaux de log à WARN pour éviter
+  les multiples affichages lors des commandes mvn clean install
+- j'ai corrigé le mécanisme d'interception
+- les tests avec interception passent
+- mise à part les remarques ci-avant, élection = ok
+
+vendredi 16 juin
+----------------
+- veuillez résoudre les problèmes des avertissements à la compilation
+- comme pour le binôme Asma GHORBEL et Arbia JELASSI, dans la méthode
+  treatConsoleInput de la classe Client, l'incrémentation du vecteur
+  d'horloge n'est pas faite au bon endroit
+- dans la méthode receiveChatMessageContent, préférez le foreach Java
+  avec l'itérateur plutôt que la manipulation d'une variable de boucle
+- dans la même méthode, la condition de la ligne 66 est redondante par
+  rapport à la méthod isPrecededByAndFIFO
+- dans la même méthode, la condition de la ligne 67 est toujours fausse
+  car un client ne reçoit jamais ses propres messages
+
