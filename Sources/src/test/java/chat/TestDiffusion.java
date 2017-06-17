@@ -38,8 +38,12 @@ public class TestDiffusion extends Scenario{
 		if (LOG_ON && TEST.isInfoEnabled()) {
 			TEST.info("starting the test of the diffusion algorithm...");
 		}
+		
+		
+		
 		emulateAnInputLineFromTheConsoleForAClient(c0, "question from 0");
-		emulateAnInputLineFromTheConsoleForAClient(c1, "question from 1");
+		
+		emulateAnInputLineFromTheConsoleForAClient(c1, "reponse from 1");
 		if (LOG_ON && TEST.isInfoEnabled()) {
 			TEST.info("end of the scenario.");
 		}

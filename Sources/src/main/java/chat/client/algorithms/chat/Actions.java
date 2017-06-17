@@ -63,8 +63,6 @@ public final class Actions {
 					ChatMessageContent msg = state.MsgBag.get(i);
 					int q = msg.getSender();
 					boolean condition = state.horloge.isPrecededByAndFIFO(msg.getHorloge(),q);
-					condition |= msg.getHorloge().getEntry(q).equals(state.horloge.getEntry(q)+1);
-					condition &= (q == state.identity);
 					 
 					if(condition){
 						exist = true;

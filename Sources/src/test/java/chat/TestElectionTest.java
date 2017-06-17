@@ -1,6 +1,7 @@
 package chat;
 
 
+import chat.common.Interceptor;
 import chat.common.Log;
 import chat.common.Scenario;
 import chat.server.Server;
@@ -30,15 +31,17 @@ public class TestElectionTest extends Scenario {
 		sleep(500);
 		Server s6 = instanciateAServer("5 localhost 2");
 		sleep(500);
-		//Interceptor.setInterceptionEnabled(true);
-		sleep(500);
-		emulateAnInputLineFromTheConsoleForAServer(s3, "Initiator");
+		Interceptor.setInterceptionEnabled(true);
+		sleep(500); 
+		emulateAnInputLineFromTheConsoleForAServer(s6, "Initiator");
 		emulateAnInputLineFromTheConsoleForAServer(s5, "Initiator");
 		emulateAnInputLineFromTheConsoleForAServer(s2, "Initiator");
-		emulateAnInputLineFromTheConsoleForAServer(s4, "Initiator");
-		sleep(15000);
-		Assert.assertEquals("non-leader" , s1.getState().getStatus() );
-		Assert.assertEquals("leader" , s2.getState().getStatus() );
+		emulateAnInputLineFromTheConsoleForAServer(s1, "Initiator");
+		sleep(18000);
+		System.out.println(s6.getState().getStatus());
+		System.out.println(s1.getState().getStatus());
+		Assert.assertEquals("leader" , s1.getState().getStatus() );
+		Assert.assertEquals("non-leader" , s2.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s3.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s4.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s5.getState().getStatus() );

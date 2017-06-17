@@ -24,7 +24,12 @@ package chat.common;
 
 import java.util.ArrayList;
 import java.util.List;
+<<<<<<< HEAD
+8
+=======
+
 import chat.client.algorithms.chat.ChatMessageContent;
+>>>>>>> 8c58a3bc5c9d40adf00112e782cae3ade6e268b0
 import chat.server.algorithms.election.ElectionTokenContent;
 
 /**
@@ -107,7 +112,7 @@ public final class Interceptor {
 		} else if(msg instanceof ChatMessageContent){
 			ChatMessageContent content = (ChatMessageContent) msg;
 			chat.client.State s = (chat.client.State) state;
-			if(content.getSender() == 0 && s.identity == 2) {
+			if(content.getSender() == 1 && s.identity == 3) {
 				new Thread(new TreatDelayedMessage<chat.client.State, ChatMessageContent>(s, content, null)).start();
 			}
 		} else {
