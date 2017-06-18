@@ -3,7 +3,6 @@ package chat;
 import static chat.common.Log.LOGGER_NAME_TEST;
 import static chat.common.Log.LOG_ON;
 import static chat.common.Log.TEST;
-import static org.junit.Assert.*;
 
 import org.apache.log4j.Level;
 import org.junit.Assert;

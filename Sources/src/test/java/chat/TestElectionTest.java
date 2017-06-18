@@ -1,14 +1,8 @@
 package chat;
 
 
-<<<<<<< HEAD
+
 import static chat.common.Log.LOGGER_NAME_TEST;
-=======
-import chat.common.Interceptor;
-import chat.common.Log;
-import chat.common.Scenario;
-import chat.server.Server;
->>>>>>> diffusioncausale
 
 import org.apache.log4j.Level;
 import org.junit.Assert;
@@ -40,17 +34,16 @@ public class TestElectionTest extends Scenario {
 		Server s6 = instanciateAServer("5 localhost 2");
 		sleep(500);
 		Interceptor.setInterceptionEnabled(true);
-<<<<<<< HEAD
+
 		sleep(500);
 		emulateAnInputLineFromTheConsoleForAServer(s3, "Initiator");
-=======
+
 		emulateAnInputLineFromTheConsoleForAServer(s6, "Initiator");
-		sleep(100);
->>>>>>> diffusioncausale
+
 		emulateAnInputLineFromTheConsoleForAServer(s5, "Initiator");
-		sleep(100);
+	
 		emulateAnInputLineFromTheConsoleForAServer(s2, "Initiator");
-		sleep(100);
+		
 		emulateAnInputLineFromTheConsoleForAServer(s1, "Initiator");
 		sleep(18000);
 		Assert.assertEquals("leader" , s1.getState().getStatus() );
