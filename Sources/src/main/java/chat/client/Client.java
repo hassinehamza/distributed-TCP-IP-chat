@@ -114,7 +114,7 @@ public class Client {
 	/**
 	 * checks the invariant of the class.
 	 * 
-	 * NB: the method is final so that the method is not overriden in potential
+	 * NB: the method is final so that the method is not overridden in potential
 	 * subclasses because it is called in the constructor.
 	 * 
 	 * @return a boolean stating whether the invariant is maintained.
@@ -125,7 +125,7 @@ public class Client {
 	}
 
 	/**
-	 * starts the thread that is responible for reading messages from the
+	 * starts the thread that is responsible for reading messages from the
 	 * server.
 	 */
 	public void startThreadReadMessagesFromNetwork() {
@@ -154,11 +154,15 @@ public class Client {
 			Thread.currentThread().interrupt();
 		} else {
 			synchronized (state) {
+				//Vp = Vp + 1p
+				state.horloge.incrementEntry(state.identity);
+
 				ChatMessageContent msg = new ChatMessageContent(state.identity,
-						line);
+						line, state.horloge);
 				if (LOG_ON && COMM.isTraceEnabled()) {
 					COMM.trace("sending chat message: " + msg);
 				}
+				
 				// The sequence number is irrelevant (assigned to 0) for client
 				// messages sent to the server, but will be assigned by the
 				// server to control the propagation of client messages.

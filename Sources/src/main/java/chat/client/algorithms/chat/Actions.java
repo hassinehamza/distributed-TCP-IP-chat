@@ -21,6 +21,8 @@ Contributor(s):
  */
 package chat.client.algorithms.chat;
 
+import java.util.Iterator;
+
 import chat.client.State;
 import chat.server.Server;
 
@@ -50,14 +52,31 @@ public final class Actions {
 	 * @param content
 	 *            the content of the message.
 	 */
-	public static void receiveChatMessageContent(final State state,
-			final ChatMessageContent content) {
+	public static void receiveChatMessageContent(final State state, final ChatMessageContent content) {
 		synchronized (state) {
 			state.nbChatMessageContentReceived++;
-			System.out.println("client "
-					+ state.identity % Server.OFFSET_ID_CLIENT + " of server "
-					+ state.identity / Server.OFFSET_ID_CLIENT + " receives "
-					+ content);
+			state.MsgBag.add(content);
+			boolean exist = true;
+			while (exist) {
+				exist = false;
+				for (Iterator<ChatMessageContent> iterator = state.MsgBag.iterator(); iterator.hasNext();) {
+					ChatMessageContent msg = iterator.next();
+					int q = msg.getSender();
+					boolean condition = state.horloge.isPrecededByAndFIFO(msg.getHorloge(), q);
+
+					if (condition) {
+						exist = true;
+						System.out.println("client " + state.identity % Server.OFFSET_ID_CLIENT + " of server "
+								+ state.identity / Server.OFFSET_ID_CLIENT + " receives " + content);
+
+						iterator.remove();
+						if (q != state.identity) {
+							state.horloge.incrementEntry(q);
+						}
+					}
+				}
+			}
+
 		}
 	}
 }

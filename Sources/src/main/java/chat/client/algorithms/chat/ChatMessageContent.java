@@ -25,6 +25,7 @@ import static chat.common.Log.GEN;
 import static chat.common.Log.LOG_ON;
 
 import chat.common.AbstractContent;
+import chat.common.VectorClock;
 
 /**
  * This class defines the content of a chat message.
@@ -45,6 +46,10 @@ public class ChatMessageContent extends AbstractContent {
 	 * the content of the message.
 	 */
 	private String content;
+	/**
+	 * Horloge
+	 */
+	private VectorClock horloge;
 
 	/**
 	 * constructs the message.
@@ -54,17 +59,19 @@ public class ChatMessageContent extends AbstractContent {
 	 * @param content
 	 *            the content of the message.
 	 */
-	public ChatMessageContent(final int idSender, final String content) {
+	public ChatMessageContent(final int idSender, final String content, final VectorClock horloge) {
 		if (idSender < 0) {
-			throw new IllegalArgumentException(
-					"invalid id for the sender(" + idSender + ")");
+			throw new IllegalArgumentException("invalid id for the sender(" + idSender + ")");
 		}
 		if (content == null) {
-			throw new IllegalArgumentException(
-					"invalid content (null)");
+			throw new IllegalArgumentException("invalid content (null)");
+		}
+		if (horloge == null) {
+			throw new IllegalArgumentException("invalid horloge (null)");
 		}
 		sender = idSender;
 		this.content = content;
+		this.horloge = horloge;
 		assert invariant();
 	}
 
@@ -96,6 +103,10 @@ public class ChatMessageContent extends AbstractContent {
 	 */
 	public String getContent() {
 		return content;
+	}
+
+	public VectorClock getHorloge() {
+		return horloge;
 	}
 
 	@Override

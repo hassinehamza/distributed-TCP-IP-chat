@@ -187,19 +187,25 @@ public class VectorClock implements Serializable, Cloneable {
 	 */
 	public boolean isPrecededByAndFIFO(final VectorClock other,
 			final int sender) {
-		if (other.getEntry(sender) != (this.getEntry(sender) + 1)) {
-			return false;
-		}
-		for (Integer key : vectorClock.keySet()) {
-			if (key.equals(sender)) {
-				continue;
-			} else {
-				if (other.getEntry(key) > this.getEntry(key)) {
-					return false;
+		if (other != null) {
+			List<Integer> keys = new ArrayList<>(vectorClock.keySet());
+			keys.addAll(other.vectorClock.keySet());
+			if (other.getEntry(sender) != (this.getEntry(sender) + 1)) {
+				return false;
+			}
+			for (Integer key : keys) {
+				if (key.equals(sender)) {
+					continue;
+				} else {
+					if (other.getEntry(key) > this.getEntry(key)) {
+						return false;
+					}
 				}
 			}
+			return true;
+		} else {
+			return false;
 		}
-		return true;
 	}
 
 	@Override

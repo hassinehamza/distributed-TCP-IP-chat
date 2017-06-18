@@ -91,8 +91,10 @@ public enum ListOfAlgorithms {
 					executed = true;
 					if (action.contentClass().isInstance(content)
 							&& state != null) {
+						
 						action.executeOrIntercept(state,
 								action.contentClass().cast(content));
+						
 					} else {
 						throw new IllegalArgumentException(
 								"The content is not of the right type ("

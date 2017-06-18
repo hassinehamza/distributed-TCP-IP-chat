@@ -1,23 +1,14 @@
 package chat;
 
 
-<<<<<<< HEAD
-import static chat.common.Log.LOGGER_NAME_TEST;
-=======
-import chat.common.Interceptor;
 import chat.common.Log;
 import chat.common.Scenario;
 import chat.server.Server;
->>>>>>> diffusioncausale
 
+import static chat.common.Log.*;
 import org.apache.log4j.Level;
 import org.junit.Assert;
 import org.junit.Test;
-
-import chat.common.Interceptor;
-import chat.common.Log;
-import chat.common.Scenario;
-import chat.server.Server;
 
 public class TestElectionTest extends Scenario {
 
@@ -25,7 +16,7 @@ public class TestElectionTest extends Scenario {
 	@Override
 	public void constructAndRun() throws Exception {
 		// TODO Auto-generated method stub
-		Log.configureALogger(LOGGER_NAME_TEST, Level.WARN);
+		Log.configureALogger(LOGGER_NAME_TEST, Level.INFO);
 
 		Server s1 = instanciateAServer("0");
 		sleep(500);
@@ -39,22 +30,15 @@ public class TestElectionTest extends Scenario {
 		sleep(500);
 		Server s6 = instanciateAServer("5 localhost 2");
 		sleep(500);
-		Interceptor.setInterceptionEnabled(true);
-<<<<<<< HEAD
+		//Interceptor.setInterceptionEnabled(true);
 		sleep(500);
 		emulateAnInputLineFromTheConsoleForAServer(s3, "Initiator");
-=======
-		emulateAnInputLineFromTheConsoleForAServer(s6, "Initiator");
-		sleep(100);
->>>>>>> diffusioncausale
 		emulateAnInputLineFromTheConsoleForAServer(s5, "Initiator");
-		sleep(100);
 		emulateAnInputLineFromTheConsoleForAServer(s2, "Initiator");
-		sleep(100);
-		emulateAnInputLineFromTheConsoleForAServer(s1, "Initiator");
-		sleep(18000);
-		Assert.assertEquals("leader" , s1.getState().getStatus() );
-		Assert.assertEquals("non-leader" , s2.getState().getStatus() );
+		emulateAnInputLineFromTheConsoleForAServer(s4, "Initiator");
+		sleep(15000);
+		Assert.assertEquals("non-leader" , s1.getState().getStatus() );
+		Assert.assertEquals("leader" , s2.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s3.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s4.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s5.getState().getStatus() );

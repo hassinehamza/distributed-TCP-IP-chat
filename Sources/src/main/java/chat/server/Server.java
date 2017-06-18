@@ -206,13 +206,13 @@ public class Server {
 
 		if (line == null) {
 			throw new IllegalArgumentException("no command line");
-		}else if(line.equals("Initiator")){
+		} else if (line.equals("Initiator")) {
 			synchronized (state) {
 				state.setStatus("Initiator");
 				state.setCaw(state.getIdentity());
-				//System.out.println("status :" + state.getStatus());
+				// System.out.println("status :" + state.getStatus());
 				try {
-					//Thread.sleep(10000);
+					// Thread.sleep(10000);
 
 					sendToAllServers(Algorithm.TOKEN_MESSAGE.identifier(), state.getIdentity(), state.seqNumber,
 							new ElectionTokenContent(state.getIdentity(), state.getIdentity()));
@@ -222,16 +222,14 @@ public class Server {
 					e.printStackTrace();
 				}
 			}
-			
-		} 
-		else {
+
+		} else {
 
 			if (LOG_ON && GEN.isDebugEnabled()) {
 
 				GEN.debug("new command line on console");
 
 			}
-		
 
 		}
 
@@ -531,24 +529,34 @@ public class Server {
 	 */
 	private void forwardClients(final SelectionKey exceptKey, final int type, final int identity, final int seqNumber,
 			final Serializable msg) throws IOException {
+
 		int nbClients = 0;
 		synchronized (state) {
+
 			for (SelectionKey target : state.allClientWorkers.keySet()) {
+
 				if (target == exceptKey) {
 					if (LOG_ON && COMM.isDebugEnabled()) {
 						COMM.debug("do not send to a client " + "because (target == exceptKey)");
 					}
+
 					continue;
 				}
 				FullDuplexMsgWorker clientWorker = state.allClientWorkers.get(target);
+
 				if (clientWorker == null) {
+
 					COMM.warn("Bad receiver for key " + target);
 				} else {
+
 					clientWorker.sendMsg(type, identity, seqNumber, msg);
+
 					nbClients++;
+
 				}
 			}
 		}
+
 		if (LOG_ON && COMM.isInfoEnabled()) {
 			COMM.info("Send message to " + nbClients + " client end points");
 		}

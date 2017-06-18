@@ -23,7 +23,12 @@ Contributor(s):
 package chat.client;
 
 import chat.common.AbstractState;
+import chat.common.VectorClock;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import chat.client.algorithms.chat.ChatMessageContent;
 /**
  * This class defines the attributes of the state of the client. Since the class
  * is only a data structure with no methods, all the attributes are set as
@@ -48,4 +53,8 @@ public class State extends AbstractState {
 	 * number of chat messages sent.
 	 */
 	public int nbChatMessageContentSent;
+	
+	public VectorClock horloge = new VectorClock();  
+	
+	public List<ChatMessageContent> MsgBag = new ArrayList<ChatMessageContent>();
 }

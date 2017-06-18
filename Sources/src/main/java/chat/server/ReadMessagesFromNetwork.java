@@ -298,6 +298,7 @@ public class ReadMessagesFromNetwork implements Runnable {
 					int seqNumber = state.seqNumber++;
 					state.clientSeqNumbers.put(identity, seqNumber);
 					server.forward(key, messType, identity, seqNumber, msg);
+					
 				}
 			}
 		} catch (IOException e) {
