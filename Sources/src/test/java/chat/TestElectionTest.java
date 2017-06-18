@@ -17,7 +17,7 @@ public class TestElectionTest extends Scenario {
 	@Override
 	public void constructAndRun() throws Exception {
 		// TODO Auto-generated method stub
-		Log.configureALogger(LOGGER_NAME_TEST, Level.INFO);
+		Log.configureALogger(LOGGER_NAME_TEST, Level.WARN);
 
 		Server s1 = instanciateAServer("0");
 		sleep(500);
@@ -32,14 +32,14 @@ public class TestElectionTest extends Scenario {
 		Server s6 = instanciateAServer("5 localhost 2");
 		sleep(500);
 		Interceptor.setInterceptionEnabled(true);
-		sleep(500); 
 		emulateAnInputLineFromTheConsoleForAServer(s6, "Initiator");
+		sleep(100);
 		emulateAnInputLineFromTheConsoleForAServer(s5, "Initiator");
+		sleep(100);
 		emulateAnInputLineFromTheConsoleForAServer(s2, "Initiator");
+		sleep(100);
 		emulateAnInputLineFromTheConsoleForAServer(s1, "Initiator");
 		sleep(18000);
-		System.out.println(s6.getState().getStatus());
-		System.out.println(s1.getState().getStatus());
 		Assert.assertEquals("leader" , s1.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s2.getState().getStatus() );
 		Assert.assertEquals("non-leader" , s3.getState().getStatus() );

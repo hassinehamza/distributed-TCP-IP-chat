@@ -10,11 +10,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import chat.client.Client;
+import chat.common.Interceptor;
 import chat.common.Log;
 import chat.common.Scenario;
 import chat.server.Server;
 
-public class TestDiffusion extends Scenario{
+public class TestDiffusion extends Scenario {
 
 	@Test
 	@Override
@@ -24,11 +25,10 @@ public class TestDiffusion extends Scenario{
 
 		Server s0 = instanciateAServer("0");
 		sleep(500);
-//		Server s1 = instanciateAServer("1 localhost 0");
-//		sleep(500);
-		//Interceptor.setInterceptionEnabled(true);
-//		sleep(500);
-		sleep(8000);
+		// Server s1 = instanciateAServer("1 localhost 0");
+		// sleep(500);
+		// Interceptor.setInterceptionEnabled(true);
+		// sleep(500);
 		Client c0 = instanciateAClient(2050);
 		sleep(500);
 		Client c1 = instanciateAClient(2050);
@@ -38,16 +38,23 @@ public class TestDiffusion extends Scenario{
 		if (LOG_ON && TEST.isInfoEnabled()) {
 			TEST.info("starting the test of the diffusion algorithm...");
 		}
-		
-		
-		
-		emulateAnInputLineFromTheConsoleForAClient(c0, "question from 0");
-		
-		emulateAnInputLineFromTheConsoleForAClient(c1, "reponse from 1");
+
+		Interceptor.setInterceptionEnabled(true);
+		emulateAnInputLineFromTheConsoleForAClient(c0, "message 1 from 0");
+		sleep(100);
+		Interceptor.setInterceptionEnabled(false);
+		emulateAnInputLineFromTheConsoleForAClient(c1, "message 2 from 1");
+		sleep(500);
 		if (LOG_ON && TEST.isInfoEnabled()) {
 			TEST.info("end of the scenario.");
 		}
 
+		Assert.assertEquals(c0.getState().MsgBag.size(), 0);
+		Assert.assertEquals(c1.getState().MsgBag.size(), 0);
+		Assert.assertEquals(c2.getState().MsgBag.size(), 0);
+
+		emulateAnInputLineFromTheConsoleForAServer(s0, "quit");
+		sleep(100);
 		// finish properly
 		emulateAnInputLineFromTheConsoleForAClient(c0, "quit");
 		sleep(100);
@@ -55,11 +62,10 @@ public class TestDiffusion extends Scenario{
 		sleep(100);
 		emulateAnInputLineFromTheConsoleForAClient(c2, "quit");
 		sleep(100);
-		emulateAnInputLineFromTheConsoleForAServer(s0, "quit");
-//		sleep(100);
-//		emulateAnInputLineFromTheConsoleForAServer(s1, "quit");
+
+		// emulateAnInputLineFromTheConsoleForAServer(s1, "quit");
 		sleep(1000);
 
 	}
-	
+
 }

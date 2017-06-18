@@ -100,27 +100,24 @@ public final class Interceptor {
 			ElectionTokenContent content = (ElectionTokenContent) msg;
 			chat.server.State s = (chat.server.State) state;
 			if (content.getInitiator() == content.getSender()) {
-				new Thread(new TreatDelayedMessage<chat.server.State, ElectionTokenContent>(s, content, s.currKey)).start();
+				new Thread(new TreatDelayedMessage<chat.server.State, ElectionTokenContent>(s, content, s.currKey))
+						.start();
 			} else {
 				set.add(msg);
 			}
-		} else if(msg instanceof ChatMessageContent){
+		} else if (msg instanceof ChatMessageContent) {
 			ChatMessageContent content = (ChatMessageContent) msg;
 			chat.client.State s = (chat.client.State) state;
-			if(content.getSender() == 0 && s.identity == 2) {
+			if (content.getSender() == 0 && s.identity == 2) {
 				new Thread(new TreatDelayedMessage<chat.client.State, ChatMessageContent>(s, content, null)).start();
+			} else {
+				set.add(msg);
 			}
+
 		} else {
 			set.add(msg);
 		}
-		
-		
-		
-			
-			
-		
-		
-		
+
 		return set;
 	}
 

@@ -36,22 +36,18 @@ import chat.server.algorithms.election.ElectionTokenContent;
  * @param <C>
  *            the type of the content of the delayed message.
  */
-public class TreatDelayedMessage<S extends AbstractState, C extends AbstractContent>
-		implements Runnable {
+public class TreatDelayedMessage<S extends AbstractState, C extends AbstractContent> implements Runnable {
 	/**
 	 * the state of the entity that has to receive this delayed message.
 	 */
-	@SuppressWarnings("unused")
 	private S state;
 	/**
 	 * the content of the message.
 	 */
-	@SuppressWarnings("unused")
 	private C content;
 	/**
 	 * the selection from which the message should be received later.
 	 */
-	@SuppressWarnings("unused")
 	private SelectionKey key;
 	/**
 	 * the delay.
@@ -68,8 +64,7 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 	 * @param key
 	 *            the selection from which the message should be received later.
 	 */
-	public TreatDelayedMessage(final S state, final C content,
-			final SelectionKey key) {
+	public TreatDelayedMessage(final S state, final C content, final SelectionKey key) {
 		this.state = state;
 		this.content = content;
 		this.key = key;
@@ -83,18 +78,14 @@ public class TreatDelayedMessage<S extends AbstractState, C extends AbstractCont
 			e.printStackTrace();
 			return;
 		}
-		
-//		Interceptor.setInterceptionEnabled(true);
- 		if (content instanceof ElectionTokenContent) {
-		((chat.server.State) state).currKey = key;
- 			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.execute((chat.server.State) state,
- 					content);
- 		} else if (content instanceof ChatMessageContent) {
- 			chat.client.algorithms.chat.Algorithm.CHAT_MESSAGE.execute((chat.client.State) state, 
- 					content);
- 		}
- 		
- 		
+
+		// Interceptor.setInterceptionEnabled(true);
+		if (content instanceof ElectionTokenContent) {
+			((chat.server.State) state).currKey = key;
+			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.execute((chat.server.State) state, content);
+		} else if (content instanceof ChatMessageContent) {
+			chat.client.algorithms.chat.Algorithm.CHAT_MESSAGE.execute((chat.client.State) state, content);
+		}
 
 	}
 }

@@ -33,7 +33,6 @@ import java.nio.channels.SocketChannel;
 
 import chat.client.algorithms.chat.Algorithm;
 import chat.client.algorithms.chat.ChatMessageContent;
-import chat.common.VectorClock;
 
 /**
  * This class contains the logic of a client of the chat application. It

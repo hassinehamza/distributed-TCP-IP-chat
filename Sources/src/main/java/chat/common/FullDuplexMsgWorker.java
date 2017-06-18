@@ -154,6 +154,7 @@ public class FullDuplexMsgWorker {
 	 */
 	public long sendMsg(final int type, final int identity, final int seqNumber, final Serializable s)
 			throws IOException {
+		
 		ByteArrayOutputStream bo = new ByteArrayOutputStream();
 		int size;
 		ObjectOutputStream oo = new ObjectOutputStream(bo);
