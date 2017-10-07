@@ -29,32 +29,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chat.client.algorithms.chat.ChatMessageContent;
+
 /**
- * This class defines the attributes of the state of the client. Since the class
- * is only a data structure with no methods, all the attributes are set as
- * public, and as a consequence, special care must be taken to access these
- * attributes when multi-threading: The synchronized statement must be used in
- * this case.
+ * This class defines the attributes of the state of the client. Since the class is only a data
+ * structure with no methods, all the attributes are set as public, and as a consequence, special
+ * care must be taken to access these attributes when multi-threading: The synchronized statement
+ * must be used in this case.
  * 
  * @author Denis Conan
+ * @author Hamza Hassine
+ * @author Majdi Haouech
  * 
  */
 public class State extends AbstractState {
-	/**
-	 * identity of this client. The identity is computed by the server as
-	 * follows: {@code state.identity * OFFSET_ID_CLIENT + clientNumber}.
-	 */
-	public int identity;
-	/**
-	 * number of chat messages received.
-	 */
-	public int nbChatMessageContentReceived;
-	/**
-	 * number of chat messages sent.
-	 */
-	public int nbChatMessageContentSent;
-	
-	public VectorClock horloge = new VectorClock();  
-	
-	public List<ChatMessageContent> MsgBag = new ArrayList<ChatMessageContent>();
+  /**
+   * identity of this client. The identity is computed by the server as follows:
+   * {@code state.identity * OFFSET_ID_CLIENT + clientNumber}.
+   */
+  public int identity;
+  /**
+   * number of chat messages received.
+   */
+  public int nbChatMessageContentReceived;
+  /**
+   * number of chat messages sent.
+   */
+  public int nbChatMessageContentSent;
+
+  public VectorClock horloge = new VectorClock();
+
+  public List<ChatMessageContent> MsgBag = new ArrayList<ChatMessageContent>();
 }

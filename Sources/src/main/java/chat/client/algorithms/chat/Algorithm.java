@@ -32,9 +32,11 @@ import chat.common.Action;
 /**
  * This Enumeration type declares the algorithm of the chat part of the client's
  * state machine. Only one message content type can be received.
- * 
+ *
  * @author Denis Conan
- * 
+ * @author Hamza Hassine
+ * @author Majdi Haouech
+ *
  */
 public enum Algorithm implements Action<State> {
 	/**
@@ -96,7 +98,8 @@ public enum Algorithm implements Action<State> {
 	 */
 	Algorithm(final Class<? extends AbstractContent> contentClass) {
 		actionIndex = chat.common.Action.OFFSET_CLIENT_ALGORITHMS
-				+ chat.client.algorithms.ListOfAlgorithms.OFFSET_CHAT_ALGORITHM + ordinal();
+		    + chat.client.algorithms.ListOfAlgorithms.OFFSET_CHAT_ALGORITHM
+				+ ordinal();
 		this.contentClass = contentClass;
 	}
 

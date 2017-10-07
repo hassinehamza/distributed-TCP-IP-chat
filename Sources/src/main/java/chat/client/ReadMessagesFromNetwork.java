@@ -33,99 +33,94 @@ import chat.common.FullDuplexMsgWorker;
 import chat.common.ReadMessageStatus;
 
 /**
- * This class contains the chat client's thread waiting for messages from its
- * server. The constructor initialises the full message worker and the method
- * {@code run} receives messages from the server and dispatch them according to
- * the message type using the method {@code execute} of the class
- * {@link chat.client.algorithms.ListOfAlgorithms}
+ * This class contains the chat client's thread waiting for messages from its server. The
+ * constructor initialises the full message worker and the method {@code run} receives messages from
+ * the server and dispatch them according to the message type using the method {@code execute} of
+ * the class {@link chat.client.algorithms.ListOfAlgorithms}
  * 
  * @author chris
  * @author Denis Conan
  * 
  */
 public class ReadMessagesFromNetwork extends FullDuplexMsgWorker
-		implements Runnable {
-	/**
-	 * state of the client. This is where all the attributes of the chat client
-	 * are stored.
-	 */
-	private State state;
+    implements Runnable {
+  /**
+   * state of the client. This is where all the attributes of the chat client are stored.
+   */
+  private State state;
 
-	/**
-	 * constructs the thread of a client that is responsible for the reception
-	 * of messages from the chat server. This thread is then a full duplex
-	 * message worker. After the construction of the full message worker, the
-	 * constructor receive its first message from the chat server that contains
-	 * the identity of the server.
-	 * 
-	 * @param chan
-	 *            the socket channel connecting the client to the server.
-	 * @param state
-	 *            the client state object.
-	 */
-	public ReadMessagesFromNetwork(final SocketChannel chan,
-			final State state) {
-		super(chan);
-		this.state = state;
-		ReadMessageStatus msgState;
-		do {
-			msgState = readMessage();
-		} while (msgState != ReadMessageStatus.ReadDataCompleted);
-		try {
-			Integer idFromServer = (Integer) getData();
-			state.identity = idFromServer.intValue();
-		} catch (IOException e) {
-			throw new IllegalStateException(
-					"communication problem while getting"
-							+ " the identity of the chat server");
-		}
-		assert invariant();
-	}
+  /**
+   * constructs the thread of a client that is responsible for the reception of messages from the
+   * chat server. This thread is then a full duplex message worker. After the construction of the
+   * full message worker, the constructor receive its first message from the chat server that
+   * contains the identity of the server.
+   * 
+   * @param chan
+   *          the socket channel connecting the client to the server.
+   * @param state
+   *          the client state object.
+   */
+  public ReadMessagesFromNetwork(final SocketChannel chan, final State state) {
+    super(chan);
+    this.state = state;
+    ReadMessageStatus msgState;
+    do {
+      msgState = readMessage();
+    } while (msgState != ReadMessageStatus.ReadDataCompleted);
+    try {
+      Integer idFromServer = (Integer) getData();
+      state.identity = idFromServer.intValue();
+    } catch (IOException e) {
+      throw new IllegalStateException(
+          "communication problem while getting" +
+                " the identity of the chat server" + state.identity);
+    }
+    assert invariant();
+  }
 
-	/**
-	 * checks the invariant of the class.
-	 * 
-	 * NB: the method is final so that the method is not overriden in potential
-	 * subclasses because it is called in the constructor.
-	 * 
-	 * @return a boolean stating whether the invariant is maintained.
-	 */
-	public final boolean invariant() {
-		return state != null;
-	}
+  /**
+   * checks the invariant of the class.
+   *
+   * NB: the method is final so that the method is not overriden in potential subclasses because it
+   * is called in the constructor.
+   * 
+   * @return a boolean stating whether the invariant is maintained.
+   */
+  public final boolean invariant() {
+    return state != null;
+  }
 
-	/**
-	 * organizes an infinite loop to receive messages from the chat server and
-	 * to execute the corresponding action. The action is searched for in the
-	 * enumeration {@link chat.client.algorithms.ListOfAlgorithms} through the
-	 * method
-	 * {@link chat.client.algorithms.ListOfAlgorithms#execute(State, int, Object)}.
-	 */
-	@Override
-	public void run() {
-		if (LOG_ON && GEN.isDebugEnabled()) {
-			GEN.debug("Client thread for rcving msgs from the network started");
-		}
-		ReadMessageStatus messState;
-		while (!Thread.interrupted()) {
-			try {
-				messState = readMessage();
-				if (messState == ReadMessageStatus.ChannelClosed) {
-					break;
-				} else {
-					if (messState == ReadMessageStatus.ReadDataCompleted) {
-						Object content = getData();
-						ListOfAlgorithms.execute(state, getInType(), content);
-					}
-				}
-			} catch (IOException e) {
-				COMM.warn(e.getLocalizedMessage());
-				e.printStackTrace();
-				return;
-			}
-			if (LOG_ON && COMM.isTraceEnabled()) {
-				COMM.trace("End of reception of a message");
-			}
-		}
-	}
+  /**
+   * organizes an infinite loop to receive messages from the chat server and to execute the
+   * corresponding action. The action is searched for in the enumeration
+   * {@link chat.client.algorithms.ListOfAlgorithms} through the method
+   * {@link chat.client.algorithms.ListOfAlgorithms#execute(State, int, Object)}.
+   */
+  @Override
+  public void run() {
+    if (LOG_ON && GEN.isDebugEnabled()) {
+      GEN.debug("Client thread for rcving msgs from the network started");
+    }
+    ReadMessageStatus messState;
+    while (!Thread.interrupted()) {
+      try {
+        messState = readMessage();
+        if (messState == ReadMessageStatus.ChannelClosed) {
+          break;
+        } else {
+          if (messState == ReadMessageStatus.ReadDataCompleted) {
+            Object content = getData();
+            ListOfAlgorithms.execute(state, getInType(), content);
+          }
+        }
+      } catch (IOException e) {
+        COMM.warn(e.getLocalizedMessage());
+        e.printStackTrace();
+        return;
+      }
+      if (LOG_ON && COMM.isTraceEnabled()) {
+        COMM.trace("End of reception of a message");
+      }
+    }
+  }
 }

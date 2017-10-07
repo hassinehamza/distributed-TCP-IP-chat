@@ -31,90 +31,98 @@ import chat.common.VectorClock;
  * This class defines the content of a chat message.
  * 
  * @author Denis Conan
+ * @author Hamza Hassine
+ * @author Majdi Haouech
  *
  */
 public class ChatMessageContent extends AbstractContent {
-	/**
-	 * version number for serialization.
-	 */
-	private static final long serialVersionUID = 2L;
-	/**
-	 * the sender of the message.
-	 */
-	private int sender;
-	/**
-	 * the content of the message.
-	 */
-	private String content;
-	/**
-	 * Horloge
-	 */
-	private VectorClock horloge;
+  /**
+   * version number for serialization.
+   */
+  private static final long serialVersionUID = 2L;
+  /**
+   * the sender of the message.
+   */
+  private int sender;
+  /**
+   * the content of the message.
+   */
+  private String content;
+  /**
+   * Horloge
+   */
+  private VectorClock horloge;
 
-	/**
-	 * constructs the message.
-	 * 
-	 * @param idSender
-	 *            the identifier of the sender.
-	 * @param content
-	 *            the content of the message.
-	 */
-	public ChatMessageContent(final int idSender, final String content, final VectorClock horloge) {
-		if (idSender < 0) {
-			throw new IllegalArgumentException("invalid id for the sender(" + idSender + ")");
-		}
-		if (content == null) {
-			throw new IllegalArgumentException("invalid content (null)");
-		}
-		if (horloge == null) {
-			throw new IllegalArgumentException("invalid horloge (null)");
-		}
-		sender = idSender;
-		this.content = content;
-		this.horloge = horloge;
-		assert invariant();
-	}
+  /**
+   * constructs the message.
+   * 
+   * @param idSender
+   *          the identifier of the sender.
+   * @param content
+   *          the content of the message.
+   */
+  public ChatMessageContent(final int idSender, final String content,
+      final VectorClock horloge) {
+    if (idSender < 0) {
+      throw new IllegalArgumentException("invalid id for the sender(" + idSender + ")");
+    }
+    if (content == null) {
+      throw new IllegalArgumentException("invalid content (null)");
+    }
+    if (horloge == null) {
+      throw new IllegalArgumentException("invalid horloge (null)");
+    }
+    sender = idSender;
+    this.content = content;
+    this.horloge = horloge;
+    assert invariant();
+  }
 
-	/**
-	 * checks the invariant of the class.
-	 * 
-	 * NB: the method is final so that the method is not overriden in potential
-	 * subclasses because it is called in the constructor.
-	 * 
-	 * @return the boolean stating the invariant is maintained.
-	 */
-	public final boolean invariant() {
-		return sender >= 0 && content != null;
-	}
+  /**
+   * checks the invariant of the class.
+   * 
+   * NB: the method is final so that the method is not overriden in potential subclasses because it
+   * is called in the constructor.
+   * 
+   * @return the boolean stating the invariant is maintained.
+   */
+  public final boolean invariant() {
+    return sender >= 0 && content != null;
+  }
 
-	/**
-	 * gets the identifier of the sender.
-	 * 
-	 * @return the identifer as an {@code int}.
-	 */
-	public int getSender() {
-		return sender;
-	}
+  /**
+   * gets the identifier of the sender.
+   * 
+   * @return the identifer as an {@code int}.
+   */
+  public int getSender() {
+    return sender;
+  }
 
-	/**
-	 * the content of the message.
-	 * 
-	 * @return the content of the message as a string.
-	 */
-	public String getContent() {
-		return content;
-	}
+  /**
+   * the content of the message.
+   * 
+   * @return the content of the message as a string.
+   */
+  public String getContent() {
+    return content;
+  }
+  
+  /**
+   * Horloge getter
+   * @return
+   *      Horloge
+   */
+  public VectorClock getHorloge() {
+    return horloge;
+  }
 
-	public VectorClock getHorloge() {
-		return horloge;
-	}
-
-	@Override
-	public String toString() {
-		if (LOG_ON && GEN.isInfoEnabled()) {
-			return "sender / content = " + sender + " / " + content;
-		} else {
-			return content;
-		}
-	}
+  @Override
+  public String toString() {
+    if (LOG_ON && GEN.isInfoEnabled()) {
+      return "sender / content = " + sender + " / " + content;
+    } else {
+      return content;
+    }
+  }
 }

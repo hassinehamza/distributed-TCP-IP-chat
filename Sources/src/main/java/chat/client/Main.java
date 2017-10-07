@@ -29,56 +29,56 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
- * This class is the main of the client chat that runs in a separate process. It
- * configures the client, connects to a chat server, launches a thread for
- * reading chat messages from the standard input, and enters an infinite loop
- * for receiving messages and executing the corresponding action of the client.
- * 
+ * This class is the main of the client chat that runs in a separate process. It configures the
+ * client, connects to a chat server, launches a thread for reading chat messages from the standard
+ * input, and enters an infinite loop for receiving messages and executing the corresponding action
+ * of the client.
+ *
  * @author Denis Conan
- * 
+ * @author Hamza Hassine
+ * @author Majdi Haouech
+ *
  */
 public final class Main {
 
-	/**
-	 * the client object.
-	 */
-	private static Client client;
+  /**
+   * the client object.
+   */
+  private static Client client;
 
-	/**
-	 * private constructor to avoid creating instances.
-	 */
-	private Main() {
-	}
+  /**
+   * private constructor to avoid creating instances.
+   */
+  private Main() {
+  }
 
-	/**
-	 * The method main of a prototypical client. It checks command line
-	 * arguments, creates a client object, and enter an infinite loop that reads
-	 * a chat message (in the console) and sends it through the client object.
-	 * The client object manages a reference to a full duplex message worker
-	 * that is responsible for the communication with the chat server.
-	 * 
-	 * @param args
-	 *            the command line arguments.
-	 * @throws IOException
-	 *             The exception is thrown in two cases: when reading a message
-	 *             in the console and when sending a message to the chat server.
-	 */
-	public static void main(final String[] args) throws IOException {
-		if (args.length != 2) {
-			GEN.fatal("usage: java -cp <classpath> chat.client.Main"
-					+ " <machine> <port>");
-			return;
-		}
-		client = new Client(args[0], Integer.parseInt(args[1]));
-		client.startThreadReadMessagesFromNetwork();
-		BufferedReader bufin = new BufferedReader(
-				new InputStreamReader(System.in, Charset.defaultCharset()));
-		while (!Thread.interrupted()) {
-			String consoleMsg = null;
-			consoleMsg = bufin.readLine();
-			if (consoleMsg != null) {
-				client.treatConsoleInput(consoleMsg);
-			}
-		}
-	}
+  /**
+   * The method main of a prototypical client. It checks command line arguments, creates a client
+   * object, and enter an infinite loop that reads a chat message (in the console) and sends it
+   * through the client object. The client object manages a reference to a full duplex message
+   * worker that is responsible for the communication with the chat server.
+   * 
+   * @param args
+   *          the command line arguments.
+   * @throws IOException
+   *           The exception is thrown in two cases: when reading a message in the console and when
+   *           sending a message to the chat server.
+   */
+  public static void main(final String[] args) throws IOException {
+    if (args.length != 2) {
+      GEN.fatal("usage: java -cp <classpath> chat.client.Main" + " <machine> <port>");
+      return;
+    }
+    client = new Client(args[0], Integer.parseInt(args[1]));
+    client.startThreadReadMessagesFromNetwork();
+    BufferedReader bufin = new BufferedReader(
+        new InputStreamReader(System.in, Charset.defaultCharset()));
+    while (!Thread.interrupted()) {
+      String consoleMsg = null;
+      consoleMsg = bufin.readLine();
+      if (consoleMsg != null) {
+        client.treatConsoleInput(consoleMsg);
+      }
+    }
+  }
 }

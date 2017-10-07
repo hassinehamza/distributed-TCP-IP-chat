@@ -29,30 +29,28 @@ package chat.common;
  * 
  */
 public enum ReadMessageStatus {
-	/**
-	 * read has not started, yet.
-	 */
-	ReadUnstarted,
-	/**
-	 * reading the header.
-	 */
-	ReadHeaderStarted,
-	/**
-	 * the reading of the header has been completed. The header is available for
-	 * analysis.
-	 */
-	ReadHeaderCompleted,
-	/**
-	 * reading the body of the message.
-	 */
-	ReadDataStarted,
-	/**
-	 * the reading of the body has been completed. The message is entirely
-	 * available.
-	 */
-	ReadDataCompleted,
-	/**
-	 * the channel has been closed while reading.
-	 */
-	ChannelClosed;
+  /**
+   * read has not started, yet.
+   */
+  ReadUnstarted,
+  /**
+   * reading the header.
+   */
+  ReadHeaderStarted,
+  /**
+   * the reading of the header has been completed. The header is available for analysis.
+   */
+  ReadHeaderCompleted,
+  /**
+   * reading the body of the message.
+   */
+  ReadDataStarted,
+  /**
+   * the reading of the body has been completed. The message is entirely available.
+   */
+  ReadDataCompleted,
+  /**
+   * the channel has been closed while reading.
+   */
+  ChannelClosed;
 }

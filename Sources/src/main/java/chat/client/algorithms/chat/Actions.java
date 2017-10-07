@@ -27,56 +27,55 @@ import chat.client.State;
 import chat.server.Server;
 
 /**
- * This class defines the methods implementing the reaction of the state machine
- * part concerning the reception of chat messages. Since only one message
- * content type is declared in the algorithm, there is only one static method in
- * this class.
+ * This class defines the methods implementing the reaction of the state machine part concerning the
+ * reception of chat messages. Since only one message content type is declared in the algorithm,
+ * there is only one static method in this class.
  * 
  * @author Denis Conan
  * 
  */
 public final class Actions {
 
-	/**
-	 * avoids the creation of instances.
-	 */
-	private Actions() {
-	}
+  /**
+   * avoids the creation of instances.
+   */
+  private Actions() {
+  }
 
-	/**
-	 * treats the reception of a chat message: the message is displayed in the
-	 * console.
-	 * 
-	 * @param state
-	 *            the state of the client.
-	 * @param content
-	 *            the content of the message.
-	 */
-	public static void receiveChatMessageContent(final State state, final ChatMessageContent content) {
-		synchronized (state) {
-			state.nbChatMessageContentReceived++;
-			state.MsgBag.add(content);
-			boolean exist = true;
-			while (exist) {
-				exist = false;
-				for (Iterator<ChatMessageContent> iterator = state.MsgBag.iterator(); iterator.hasNext();) {
-					ChatMessageContent msg = iterator.next();
-					int q = msg.getSender();
-					boolean condition = state.horloge.isPrecededByAndFIFO(msg.getHorloge(), q);
+  /**
+   * treats the reception of a chat message: the message is displayed in the console.
+   * 
+   * @param state
+   *          the state of the client.
+   * @param content
+   *          the content of the message.
+   */
+  public static void receiveChatMessageContent(final State state,
+      final ChatMessageContent content) {
+    synchronized (state) {
+      state.nbChatMessageContentReceived++;
+      state.MsgBag.add(content);
+      boolean exist = true;
+      while (exist) {
+        exist = false;
+        for (Iterator<ChatMessageContent> iterator = state.MsgBag.iterator(); iterator.hasNext();) {
+          ChatMessageContent msg = iterator.next();
+          int q = msg.getSender();
+          boolean condition = state.horloge.isPrecededByAndFIFO(msg.getHorloge(), q);
 
-					if (condition) {
-						exist = true;
-						System.out.println("client " + state.identity % Server.OFFSET_ID_CLIENT + " of server "
-								+ state.identity / Server.OFFSET_ID_CLIENT + " receives " + content);
+          if (condition) {
+            exist = true;
+            System.out.println("client " + state.identity % Server.OFFSET_ID_CLIENT + " of server "
+                + state.identity / Server.OFFSET_ID_CLIENT + " receives " + content);
 
-						iterator.remove();
-						if (q != state.identity) {
-							state.horloge.incrementEntry(q);
-						}
-					}
-				}
-			}
+            iterator.remove();
+            if (q != state.identity) {
+              state.horloge.incrementEntry(q);
+            }
+          }
+        }
+      }
 
-		}
-	}
+    }
+  }
 }

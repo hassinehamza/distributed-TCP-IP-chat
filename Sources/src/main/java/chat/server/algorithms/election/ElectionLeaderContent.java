@@ -25,52 +25,60 @@ import chat.common.AbstractContent;
 
 /**
  * This class defines the content of a leader message of the election algorithm.
- * 
- * TODO add attributes.
- * 
- * TODO implement the constructor.
- * 
- * TODO add getters.
- * 
- * TODO add the toString method.
- * 
- * TODO add your names in the list of authors.
- * 
  * @author Denis Conan, Hamza Hassine, Majdi Haouech
  *
  */
 public class ElectionLeaderContent extends AbstractContent {
-	/**
-	 * version number for serialization.
-	 */
-	private static final long serialVersionUID = 1L;
-	private int sender, initiator;
+  /**
+   * version number for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+  /**
+   * sender sends the leader message.
+   * initiator is the leader.
+   */
+  private int sender, initiator;
 
-	/**
-	 * constructs the content of a leader election message.
-	 */
-	public ElectionLeaderContent(int sender, int init) {
-		this.sender = sender;
-		this.initiator = init;
-	}
+  /**
+   * constructs the content of a leader election message.
+   * @param
+   *    sender
+   * @param
+   *    initiator
+   */
+  public ElectionLeaderContent(int sender, int init) {
+    this.sender = sender;
+    this.initiator = init;
+  }
+  /**
+   * sender getter.
+   * @return sender
+   */
+  public int getSender() {
+    return sender;
+  }
 
-	public int getSender() {
-		return sender;
-	}
+  /**
+   * sender setter.
+   * @param sender Integer
+   */
+  public void setSender(final int sender) {
+    this.sender = sender;
+  }
 
-	public void setSender(int sender) {
-		this.sender = sender;
-	}
+  /**
+   * initiator getter.
+   * @return initiator
+   */
+  public int getInitiator() {
+    return initiator;
+  }
 
-	public int getInitiator() {
-		return initiator;
-	}
-
-	public void setInitiator(int initiator) {
-		this.initiator = initiator;
-	}
-
-	public String toString() {
-		return "";
-	}
+  /**
+   * initiator sender.
+   * @param initiator Integer
+   */
+  public void setInitiator(final int initiator) {
+    this.initiator = initiator;
+  }
 }

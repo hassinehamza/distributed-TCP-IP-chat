@@ -25,78 +25,74 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This interface defines the interface of the actions of the algorithms of the
- * client or the server. An action has an identifier and is obtained with the
- * method {@link identifier}. The identifiers are computed in the enumerations
- * {@link chat.client.algorithms.ListOfAlgorithms} and
- * {@link chat.server.algorithms.ListOfAlgorithms}. The second method
- * ({@link execute}) is called for executing the action. The context of the call
- * are the state of the entity (client or server) and the message that has just
- * been received.
- * 
+ * This interface defines the interface of the actions of the algorithms of the client or the
+ * server. An action has an identifier and is obtained with the method {@link identifier}. The
+ * identifiers are computed in the enumerations {@link chat.client.algorithms.ListOfAlgorithms} and
+ * {@link chat.server.algorithms.ListOfAlgorithms}. The second method ({@link execute}) is called
+ * for executing the action. The context of the call are the state of the entity (client or server)
+ * and the message that has just been received.
+ *
  * @param <S>
- *            the type of the state on which the action is executed.
- * 
+ *          the type of the state on which the action is executed.
+ *
  * @author Denis Conan
- * 
+ *
  */
 public interface Action<S extends AbstractState> {
-	/**
-	 * gets the identifier (integer) of the action, which can be attached to a
-	 * message dispatcher.
-	 * 
-	 * @return the identifier of the action.
-	 */
-	int identifier();
+  /**
+   * gets the identifier (integer) of the action, which can be attached to a message dispatcher.
+   * 
+   * @return the identifier of the action.
+   */
+  int identifier();
 
-	/**
-	 * index of the first message type of the first algorithm of the server.
-	 */
-	int OFFSET_SERVER_ALGORITHMS = 0;
+  /**
+   * index of the first message type of the first algorithm of the server.
+   */
+  int OFFSET_SERVER_ALGORITHMS = 0;
 
-	/**
-	 * index of the first message type of the first algorithm of the client.
-	 */
-	int OFFSET_CLIENT_ALGORITHMS = 1000;
+  /**
+   * index of the first message type of the first algorithm of the client.
+   */
+  int OFFSET_CLIENT_ALGORITHMS = 1000;
 
-	/**
-	 * gets the type of the content/message to be treated.
-	 * 
-	 * @return the type of the content/message.
-	 */
-	Class<? extends AbstractContent> contentClass();
+  /**
+   * gets the type of the content/message to be treated.
+   *
+   * @return the type of the content/message.
+   */
+  Class<? extends AbstractContent> contentClass();
 
-	/**
-	 * executes the algorithmic part corresponding to this action.
-	 * 
-	 * @param state
-	 *            the state of the process.
-	 * @param msg
-	 *            the message in treatment.
-	 */
-	void execute(S state, AbstractContent msg);
+  /**
+   * executes the algorithmic part corresponding to this action.
+   *
+   * @param state
+   *          the state of the process.
+   * @param msg
+   *          the message in treatment.
+   */
+  void execute(S state, AbstractContent msg);
 
-	/**
-	 * executes the action due to the receipt of the message {@code msg} or
-	 * intercepts the call of the action for instance to eventually re-schedule
-	 * the receipt of the message so that some non-determinism is introduced.
-	 * The behavior is controlled by the boolean value
-	 * {@link Interceptor#isInterceptionEnabled()}.
-	 * 
-	 * @param state
-	 *            the current state of the entity that receives the message.
-	 * @param msg
-	 *            the message to treat.
-	 */
-	default void executeOrIntercept(final S state, final AbstractContent msg) {
-		List<AbstractContent> set = new ArrayList<>();
-		if (Interceptor.isInterceptionEnabled()) {
-			set = Interceptor.intercept(state, msg);
-		} else {
-			set.add(msg);
-		}
-		for (AbstractContent m : set) {
-			execute(state, m);
-		}
-	}
+  /**
+   * executes the action due to the receipt of the message {@code msg} or intercepts the call of the
+   * action for instance to eventually re-schedule the receipt of the message so that some
+   * non-determinism is introduced. The behavior is controlled by the boolean value
+   * {@link Interceptor#isInterceptionEnabled()}.
+   *
+   * @param state
+   *          the current state of the entity that receives the message.
+   * @param msg
+   *          the message to treat.
+   */
+  default void executeOrIntercept(final S state, final AbstractContent msg) {
+    List<AbstractContent> set = new ArrayList<>();
+    if (Interceptor.isInterceptionEnabled()) {
+      set = Interceptor.intercept(state, msg);
+    } else {
+      set.add(msg);
+    }
+    for (AbstractContent m : set) {
+      execute(state, m);
+    }
+  }
 }

@@ -33,68 +33,70 @@ import chat.server.algorithms.election.ElectionTokenContent;
  *
  * @param <S>
  * 
- *            the type of the state of the entity that has to receive the
+ *          the type of the state of the entity that has to receive the
  * 
- *            delayed message.
+ *          delayed message.
  * @param <C>
  * 
- *            the type of the content of the delayed message.
+ *          the type of the content of the delayed message.
  */
 public class TreatDelayedMessage<S extends AbstractState, C extends AbstractContent>
-		implements Runnable {
-	/**
-	 * the state of the entity that has to receive this delayed message.
-	 */
-	private S state;
-	/**
-	 * the content of the message.
-	 */
-	private C content;
-	/**
-	 * the selection from which the message should be received later.
-	 */
-	private SelectionKey key;
-	/**
-	 * the delay.
-	 */
-	private static final long DELAY = 50;
+    implements Runnable {
+  /**
+   * the state of the entity that has to receive this delayed message.
+   */
+  private S state;
+  /**
+   * the content of the message.
+   */
+  private C content;
+  /**
+   * the selection from which the message should be received later.
+   */
+  private SelectionKey key;
+  /**
+   * the delay.
+   */
+  private static final long DELAY = 50;
 
-	/**
-	 * the constructor.
-	 * 
-	 * @param state
-	 * 
-	 *            the state of the receiver.
-	 * @param content
-	 * 
-	 *            the content of the delayed message.
-	 * @param key
-	 * 
-	 *            the selection from which the message should be received later.
-	 */
-	public TreatDelayedMessage(final S state, final C content,
-			final SelectionKey key) {
-		this.state = state;
-		this.content = content;
-		this.key = key;
-	}
+  /**
+   * the constructor.
+   * 
+   * @param state
+   * 
+   *          the state of the receiver.
+   * @param content
+   * 
+   *          the content of the delayed message.
+   * @param key
+   * 
+   *          the selection from which the message should be received later.
+   */
+  public TreatDelayedMessage(final S state, final C content,
+      final SelectionKey key) {
+    this.state = state;
+    this.content = content;
+    this.key = key;
+  }
 
-	@Override
-	public void run() {
-		try {
-			Thread.sleep(DELAY);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			return;
-		}
+  @Override
+  public void run() {
+    try {
+      Thread.sleep(DELAY);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+      return;
+    }
 
-		// Interceptor.setInterceptionEnabled(true);
-		if (content instanceof ElectionTokenContent) {
-			((chat.server.State) state).currKey = key;
-			chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE.execute((chat.server.State) state, content);
-		} else if (content instanceof ChatMessageContent) {
-			chat.client.algorithms.chat.Algorithm.CHAT_MESSAGE.execute((chat.client.State) state, content);
-		}
+    // Interceptor.setInterceptionEnabled(true);
+    if (content instanceof ElectionTokenContent) {
+      ((chat.server.State) state).currKey = key;
+      chat.server.algorithms.election.Algorithm.TOKEN_MESSAGE
+          .execute((chat.server.State) state, content);
+    } else if (content instanceof ChatMessageContent) {
+      chat.client.algorithms.chat.Algorithm.CHAT_MESSAGE
+          .execute((chat.client.State) state, content);
+    }
 
-	}
+  }
 }

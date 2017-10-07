@@ -30,66 +30,60 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 
 /**
- * This class defines the main of a chat server. It creates and configures the
- * server object, and enters an infinite loop to read command line to control
- * the server.
- * 
+ * This class defines the main of a chat server. It creates and configures the server object, and
+ * enters an infinite loop to read command line to control the server.
+ *
  * @author chris
  * @author Denis Conan
- * 
+ *
  */
 public final class Main {
 
-	/**
-	 * the server object.
-	 */
-	private static Server server;
+  /**
+   * the server object.
+   */
+  private static Server server;
 
-	/**
-	 * private constructor to avoid creating instances.
-	 */
-	private Main() {
-	}
+  /**
+   * private constructor to avoid creating instances.
+   */
+  private Main() {
+  }
 
-	/**
-	 * The method main of a prototypical server. It checks command line
-	 * arguments, creates a server object, and enter an infinite loop that reads
-	 * a server command (in the console). The server object manages a thread
-	 * that controls a collection of full duplex message workers that are
-	 * responsible for the communication with the chat clients and the other
-	 * server. This latter thread must be started after the creation of the
-	 * server object.
-	 * 
-	 * @param args
-	 *            the command line arguments.
-	 * @throws IOException
-	 *             The exception is thrown in two cases: when reading a message
-	 *             in the console.
-	 */
-	public static void main(final String[] args) throws IOException {
-		if (LOG_ON && GEN.isTraceEnabled()) {
-			GEN.trace("there are " + args.length + " command line arguments");
-		}
-		if ((args.length < 1) || ((args.length % 2) == 0)) {
-			GEN.fatal("usage: java -cp <classpath> chat.server.Main"
-					+ " <server number>"
-					+ " <list of pairs hostname servernumber>");
-			return;
-		}
-		
-		
-		server = new Server(args);
-		server.startThreadReadMessagesFromNetwork();
-		BufferedReader bufin = new BufferedReader(
-				new InputStreamReader(System.in, Charset.defaultCharset()));
-		while (!Thread.interrupted()) {
-			String consoleMsg = null;
-			consoleMsg = bufin.readLine();
-			if (LOG_ON && GEN.isDebugEnabled()) {
-				GEN.debug("new command line for server: " + consoleMsg);
-			}
-			server.treatConsoleInput(consoleMsg);
-		}
-		
-	}
+  /**
+   * The method main of a prototypical server. It checks command line arguments, creates a server
+   * object, and enter an infinite loop that reads a server command (in the console). The server
+   * object manages a thread that controls a collection of full duplex message workers that are
+   * responsible for the communication with the chat clients and the other server. This latter
+   * thread must be started after the creation of the server object.
+   *
+   * @param args
+   *          the command line arguments.
+   * @throws IOException
+   *           The exception is thrown in two cases: when reading a message in the console.
+   */
+  public static void main(final String[] args) throws IOException {
+    if (LOG_ON && GEN.isTraceEnabled()) {
+      GEN.trace("there are " + args.length + " command line arguments");
+    }
+    if ((args.length < 1) || ((args.length % 2) == 0)) {
+      GEN.fatal("usage: java -cp <classpath> chat.server.Main"
+          + " <server number>" + " <list of pairs hostname servernumber>");
+      return;
+    }
+
+    server = new Server(args);
+    server.startThreadReadMessagesFromNetwork();
+    BufferedReader bufin = new BufferedReader(
+        new InputStreamReader(System.in, Charset.defaultCharset()));
+    while (!Thread.interrupted()) {
+      String consoleMsg = null;
+      consoleMsg = bufin.readLine();
+      if (LOG_ON && GEN.isDebugEnabled()) {
+        GEN.debug("new command line for server: " + consoleMsg);
+      }
+      server.treatConsoleInput(consoleMsg);
+    }
+
+  }
 }

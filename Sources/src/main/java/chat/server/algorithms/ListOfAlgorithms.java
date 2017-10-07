@@ -32,83 +32,83 @@ import chat.server.State;
 /**
  * This Enumeration type declares the algorithms of the server. For now, there
  * is only one algorithm: the algorithm for the election.
- * 
- * TODO add new algorithms when necessary, update the description of the
  * enumeration, and remove this comment.
- * 
- * @author Denis Conan
+ *
+ * @author Denis Conan, Hamza Hassine, Majdi Haouech
  */
 public enum ListOfAlgorithms {
-	/**
-	 * the election algorithm.
-	 */
-	ALGORITHM_ELECTION(chat.server.algorithms.election.Algorithm.ACTIONS);
+  /**
+   * the election algorithm.
+   */
+  ALGORITHM_ELECTION(chat.server.algorithms.election.Algorithm.ACTIONS);
 
-	/**
-	 * collection of the actions of this algorithm enumerator of the server. The
-	 * collection is built at class loading by parsing the collections of
-	 * actions of the algorithms; it is thus {@code static}. The collection is
-	 * unmodifiable and the attribute is {@code final} so that no other
-	 * collection can be substituted after being statically assigned.
-	 */
-	private final Map<Integer, ? extends Action<State>> mapOfActions;
+  /**
+   * collection of the actions of this algorithm enumerator of the server. The
+   * collection is built at class loading by parsing the collections of actions
+   * of the algorithms; it is thus {@code static}. The collection is
+   * unmodifiable and the attribute is {@code final} so that no other collection
+   * can be substituted after being statically assigned.
+   */
+  private final Map<Integer, ? extends Action<State>> mapOfActions;
 
-	/**
-	 * index of the first message type of the election algorithm.
-	 */
-	public static final int OFFSET_ELECTION_ALGORITHM = 0;
+  /**
+   * index of the first message type of the election algorithm.
+   */
+  public static final int OFFSET_ELECTION_ALGORITHM = 0;
 
-	/**
-	 * is the constructor of this algorithm object.
-	 * 
-	 * @param map
-	 *            collection of actions of this algorithm.
-	 */
-	ListOfAlgorithms(final Map<Integer, ? extends Action<State>> map) {
-		mapOfActions = Collections.unmodifiableMap(map);
-	}
+  /**
+   * index of the first message type of the election algorithm.
+   */
+  public static final int OFFSET_MUTUALEXCLUSION_ALGORITHM = 10;
 
-	/**
-	 * searches for the action to execute in the collection of actions of the
-	 * algorithm of the server.
-	 * 
-	 * @param state
-	 *            state of the server.
-	 * @param actionIndex
-	 *            index of the action to execute.
-	 * @param content
-	 *            content of the message just received.
-	 */
-	public static void execute(final State state, final int actionIndex,
-			final Object content) {
-		boolean executed = false;
-		for (ListOfAlgorithms algorithm : Arrays
-				.asList(ListOfAlgorithms.values())) {
-			for (Iterator<? extends Action<State>> actions = algorithm.mapOfActions
-					.values().iterator(); actions.hasNext();) {
-				Action<State> action = actions.next();
-				if (action.identifier() == actionIndex) {
-					executed = true;
-					if (action.contentClass().isInstance(content)
-							&& state != null) {
-						action.executeOrIntercept(state,
-								action.contentClass().cast(content));
-					} else {
-						throw new IllegalArgumentException(
-								"The content is not of the right type ("
-										+ content + "/" + action.contentClass()
-										+ ") or the state is null (" + state
-										+ ")");
-					}
-				}
-			}
-		}
-		synchronized (state) {
-			state.currKey = null;
-		}
-		if (!executed) {
-			throw new IllegalArgumentException(
-					"Unknown action: " + actionIndex);
-		}
-	}
+  /**
+   * is the constructor of this algorithm object.
+   *
+   * @param map
+   *          collection of actions of this algorithm.
+   */
+  ListOfAlgorithms(final Map<Integer, ? extends Action<State>> map) {
+    mapOfActions = Collections.unmodifiableMap(map);
+  }
+
+  /**
+   * searches for the action to execute in the collection of actions of the
+   * algorithm of the server.
+   *
+   * @param state
+   *          state of the server.
+   * @param actionIndex
+   *          index of the action to execute.
+   * @param content
+   *          content of the message just received.
+   */
+  public static void execute(final State state, final int actionIndex,
+      final Object content) {
+    boolean executed = false;
+    for (ListOfAlgorithms algorithm : Arrays
+        .asList(ListOfAlgorithms.values())) {
+      for (Iterator<? extends Action<State>> actions = algorithm.mapOfActions
+          .values().iterator(); actions.hasNext();) {
+        Action<State> action = actions.next();
+        if (action.identifier() == actionIndex) {
+          executed = true;
+          if (action.contentClass().isInstance(content) && state != null) {
+            action.executeOrIntercept(state,
+                action.contentClass().cast(content));
+          } else {
+            throw new IllegalArgumentException(
+                "The content is not of the right type (" + content + "/"
+                    + action.contentClass() + ") or the state is null (" + state
+                    + ")");
+          }
+        }
+      }
+    }
+    synchronized (state) {
+      state.currKey = null;
+    }
+    if (!executed) {
+      throw new IllegalArgumentException("Unknown action: " + actionIndex);
+    }
+  }
 }

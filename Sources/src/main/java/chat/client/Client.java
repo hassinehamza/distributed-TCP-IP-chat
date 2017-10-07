@@ -35,148 +35,136 @@ import chat.client.algorithms.chat.Algorithm;
 import chat.client.algorithms.chat.ChatMessageContent;
 
 /**
- * This class contains the logic of a client of the chat application. It
- * configures the client, connects to a chat server, launches a thread for
- * reading chat messages from the chat server.
+ * This class contains the logic of a client of the chat application. It configures the client,
+ * connects to a chat server, launches a thread for reading chat messages from the chat server.
  * 
  * @author Denis Conan
  * 
  */
 public class Client {
-	/**
-	 * the state of the client, that is all the attributes that are available
-	 * for managing the chat client. This attribute is {@code final} because it
-	 * is used to synchronise code blocks.
-	 */
-	private final State state = new State();
+  /**
+   * the state of the client, that is all the attributes that are available for managing the chat
+   * client. This attribute is {@code final} because it is used to synchronise code blocks.
+   */
+  private final State state = new State();
 
-	/**
-	 * the runnable object of the client that receives the messages from the
-	 * chat server.
-	 */
-	private final ReadMessagesFromNetwork runnableToRcvMsgs;
+  /**
+   * the runnable object of the client that receives the messages from the chat server.
+   */
+  private final ReadMessagesFromNetwork runnableToRcvMsgs;
 
-	/**
-	 * the thread of the client that receives the messages from the chat server.
-	 */
-	private final Thread threadToRcvMsgs;
+  /**
+   * the thread of the client that receives the messages from the chat server.
+   */
+  private final Thread threadToRcvMsgs;
 
-	/**
-	 * gets the state of the client.
-	 * 
-	 * @return the reference to the state.
-	 */
-	public State getState() {
-		return state;
-	}
+  /**
+   * gets the state of the client.
+   * 
+   * @return the reference to the state.
+   */
+  public State getState() {
+    return state;
+  }
 
-	/**
-	 * constructs a client with a connection to the chat server. The connection
-	 * to the server is managed in a thread that is also a full message worker.
-	 * Before creating the threaded full duplex message worker, the constructor
-	 * check for the server host name and open a connection with the chat
-	 * server.
-	 * 
-	 * NB: after the construction of a client object, the thread for reading
-	 * messages must be started using the method
-	 * {@link startThreadReadMessagesFromNetwork}.
-	 * 
-	 * @param serverHostName
-	 *            the name of the host of the server.
-	 * @param serverPortNb
-	 *            the port number of the accepting socket of the server.
-	 */
-	public Client(final String serverHostName, final int serverPortNb) {
-		SocketChannel rwChan;
-		InetAddress destAddr;
-		try {
-			destAddr = InetAddress.getByName(serverHostName);
-		} catch (UnknownHostException e) {
-			throw new IllegalStateException("unknown host name provided");
-		}
-		try {
-			rwChan = SocketChannel.open();
-		} catch (IOException e) {
-			throw new IllegalStateException(
-					"cannot open a connection to the server");
-		}
-		try {
-			rwChan.connect(new InetSocketAddress(destAddr, serverPortNb));
-		} catch (IOException e) {
-			throw new IllegalStateException(
-					"cannot open a connection to the server");
-		}
-		runnableToRcvMsgs = new ReadMessagesFromNetwork(rwChan, state);
-		threadToRcvMsgs = new Thread(runnableToRcvMsgs);
-		assert invariant();
-	}
+  /**
+   * constructs a client with a connection to the chat server. The connection to the server is
+   * managed in a thread that is also a full message worker. Before creating the threaded full
+   * duplex message worker, the constructor check for the server host name and open a connection
+   * with the chat server.
+   * 
+   * NB: after the construction of a client object, the thread for reading messages must be started
+   * using the method {@link startThreadReadMessagesFromNetwork}.
+   * 
+   * @param serverHostName
+   *          the name of the host of the server.
+   * @param serverPortNb
+   *          the port number of the accepting socket of the server.
+   */
+  public Client(final String serverHostName, final int serverPortNb) {
+    SocketChannel rwChan;
+    InetAddress destAddr;
+    try {
+      destAddr = InetAddress.getByName(serverHostName);
+    } catch (UnknownHostException e) {
+      throw new IllegalStateException("unknown host name provided");
+    }
+    try {
+      rwChan = SocketChannel.open();
+    } catch (IOException e) {
+      throw new IllegalStateException("cannot open a connection to the server");
+    }
+    try {
+      rwChan.connect(new InetSocketAddress(destAddr, serverPortNb));
+    } catch (IOException e) {
+      throw new IllegalStateException("cannot open a connection to the server");
+    }
+    runnableToRcvMsgs = new ReadMessagesFromNetwork(rwChan, state);
+    threadToRcvMsgs = new Thread(runnableToRcvMsgs);
+    assert invariant();
+  }
 
-	/**
-	 * checks the invariant of the class.
-	 * 
-	 * NB: the method is final so that the method is not overridden in potential
-	 * subclasses because it is called in the constructor.
-	 * 
-	 * @return a boolean stating whether the invariant is maintained.
-	 */
-	public final boolean invariant() {
-		return state != null && runnableToRcvMsgs != null
-				&& threadToRcvMsgs != null;
-	}
+  /**
+   * checks the invariant of the class.
+   * 
+   * NB: the method is final so that the method is not overridden in potential subclasses because it
+   * is called in the constructor.
+   * 
+   * @return a boolean stating whether the invariant is maintained.
+   */
+  public final boolean invariant() {
+    return state != null && runnableToRcvMsgs != null && threadToRcvMsgs != null;
+  }
 
-	/**
-	 * starts the thread that is responsible for reading messages from the
-	 * server.
-	 */
-	public void startThreadReadMessagesFromNetwork() {
-		threadToRcvMsgs.start();
-	}
+  /**
+   * starts the thread that is responsible for reading messages from the server.
+   */
+  public void startThreadReadMessagesFromNetwork() {
+    threadToRcvMsgs.start();
+  }
 
-	/**
-	 * treats an input line from the console. For now, it sends the input line
-	 * as a chat message to the server.
-	 * 
-	 * @param line
-	 *            the content of the message
-	 * @throws IOException
-	 *             the exception thrown when the sending cannot be completed.
-	 */
-	public void treatConsoleInput(final String line) throws IOException {
-		if (line == null) {
-			throw new IllegalArgumentException("no command line");
-		} else {
-			if (LOG_ON && GEN.isDebugEnabled()) {
-				GEN.debug("new command line on console");
-			}
-		}
-		if (line.equals("quit")) {
-			threadToRcvMsgs.interrupt();
-			Thread.currentThread().interrupt();
-		} else {
-			synchronized (state) {
-				//Vp = Vp + 1p
-				state.horloge.incrementEntry(state.identity);
+  /**
+   * treats an input line from the console. For now, it sends the input line as a chat message to
+   * the server.
+   * 
+   * @param line
+   *          the content of the message
+   * @throws IOException
+   *           the exception thrown when the sending cannot be completed.
+   */
+  public void treatConsoleInput(final String line) throws IOException {
+    if (line == null) {
+      throw new IllegalArgumentException("no command line");
+    } else {
+      if (LOG_ON && GEN.isDebugEnabled()) {
+        GEN.debug("new command line on console");
+      }
+    }
+    if (line.equals("quit")) {
+      threadToRcvMsgs.interrupt();
+      Thread.currentThread().interrupt();
+    } else {
+      synchronized (state) {
+        // Vp = Vp + 1p
+        state.horloge.incrementEntry(state.identity);
+        ChatMessageContent msg = new ChatMessageContent(state.identity, line, state.horloge);
+        if (LOG_ON && COMM.isTraceEnabled()) {
+          COMM.trace("sending chat message: " + msg);
+        }
 
-				ChatMessageContent msg = new ChatMessageContent(state.identity,
-						line, state.horloge);
-				if (LOG_ON && COMM.isTraceEnabled()) {
-					COMM.trace("sending chat message: " + msg);
-				}
-				
-				// The sequence number is irrelevant (assigned to 0) for client
-				// messages sent to the server, but will be assigned by the
-				// server to control the propagation of client messages.
-				// Ideally, there should exist a separate message type for chat
-				// messages from clients to their server and this new message
-				// type will not contain the sequence number.
-				long sent = runnableToRcvMsgs.sendMsg(
-						Algorithm.CHAT_MESSAGE.identifier(), state.identity, 0,
-						msg);
-				state.nbChatMessageContentSent++;
-				if (LOG_ON && COMM.isDebugEnabled()) {
-					COMM.debug(sent + " bytes sent.");
-				}
-			}
-		}
-	}
+        // The sequence number is irrelevant (assigned to 0) for client
+        // messages sent to the server, but will be assigned by the
+        // server to control the propagation of client messages.
+        // Ideally, there should exist a separate message type for chat
+        // messages from clients to their server and this new message
+        // type will not contain the sequence number.
+        long sent = runnableToRcvMsgs.sendMsg(Algorithm.CHAT_MESSAGE.identifier(),
+            state.identity, 0, msg);
+        state.nbChatMessageContentSent++;
+        if (LOG_ON && COMM.isDebugEnabled()) {
+          COMM.debug(sent + " bytes sent.");
+        }
+      }
+    }
+  }
 }

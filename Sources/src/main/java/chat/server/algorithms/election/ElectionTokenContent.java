@@ -25,53 +25,60 @@ import chat.common.AbstractContent;
 
 /**
  * This class defines the content of a token message of the election algorithm.
- * 
- * TODO add attributes. done
- * 
- * TODO implement the constructor. done
- * 
- * TODO add getters. done
- * 
- * TODO add the toString method.
- * 
- * TODO add your names in the list of authors. done
- * 
  * @author Denis Conan, Hamza Hassine, Majdi Haouech
  *
  */
 public class ElectionTokenContent extends AbstractContent {
-	/**
-	 * version number for serialization.
-	 */
-	private static final long serialVersionUID = 1L;
-	private int sender, initiator;
+  /**
+   * version number for serialization.
+   */
+  private static final long serialVersionUID = 1L;
+  /**
+   * sender sends the token message.
+   * initiator initiate the election process.
+   */
+  private int sender, initiator;
 
-	/**
-	 * constructs the content of a leader election message.
-	 */
-	public ElectionTokenContent(int sender, int initiator) {
-		this.initiator = initiator;
-		this.sender = sender;
+  /**
+   * constructs the content of a token election message.
+   * @param sender Integer
+   * @param initiator  Integer
+   */
+  public ElectionTokenContent(final int sender, final int initiator) {
+    this.initiator = initiator;
+    this.sender = sender;
+  }
 
-	}
+  /**
+   * sender getter.
+   * @return sender
+   */
+  public int getSender() {
+    return sender;
+  }
 
-	public int getSender() {
-		return sender;
-	}
+  /**
+   * sender setter.
+   * @param sender Integer
+   */
+  public void setSender(final int sender) {
+    this.sender = sender;
+  }
 
-	public void setSender(int sender) {
-		this.sender = sender;
-	}
+  /**
+   * initiator getter.
+   * @return initiator
+   */
+  public int getInitiator() {
+    return initiator;
+  }
 
-	public int getInitiator() {
-		return initiator;
-	}
+  /**
+   * initiator setter.
+   * @param initiator Integer
+   */
+  public void setInitiator(final int initiator) {
+    this.initiator = initiator;
+  }
 
-	public void setInitiator(int initiator) {
-		this.initiator = initiator;
-	}
-
-	public String toString() {
-		return "";
-	}
 }

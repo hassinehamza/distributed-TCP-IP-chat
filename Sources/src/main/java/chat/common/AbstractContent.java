@@ -28,6 +28,8 @@ import java.io.Serializable;
  * the server.
  * 
  * @author Denis Conan
+ * @author Hamza Hassine
+ * @author Majdi Haouech
  */
 public abstract class AbstractContent implements Serializable {
 	/**

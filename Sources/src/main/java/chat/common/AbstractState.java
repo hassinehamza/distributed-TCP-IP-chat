@@ -26,9 +26,11 @@ package chat.common;
  * state is the first part of the context for the execution of actions (of
  * algorithms): see the method
  * {@link chat.common.Action#execute(AbstractState, AbstractContent)}.
- * 
+ *
  * @author Denis Conan
- * 
+ * @author Hamza Hassine
+ * @author Majdi Haouech
+ *
  */
 public abstract class AbstractState {
 }

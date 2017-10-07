@@ -1,4 +1,3 @@
-// CHECKSTYLE:OFF
 /**
 This file is part of the muDEBS middleware.
 
@@ -31,145 +30,146 @@ import chat.common.FullDuplexMsgWorker;
 
 /**
  * This class defines the state of the server.
- * 
- * @author Denis Conan
+ *
+ * @author Denis Conan, Hamza Hassine, Majdi Haouch
  */
 public class State extends AbstractState {
-	/**
-	 * selection keys of the server message workers.
-	 */
-	public Map<SelectionKey, FullDuplexMsgWorker> allServerWorkers;
-	/**
-	 * selection keys of the client message workers.
-	 */
-	public Map<SelectionKey, FullDuplexMsgWorker> allClientWorkers;
-	/**
-	 * selection key of the connection from which the last message was received.
-	 */
-	public SelectionKey currKey;
-	/**
-	 * identity of this server.
-	 */
+  /**
+   * selection keys of the server message workers.
+   */
+  public Map<SelectionKey, FullDuplexMsgWorker> allServerWorkers;
+  /**
+   * selection keys of the client message workers.
+   */
+  public Map<SelectionKey, FullDuplexMsgWorker> allClientWorkers;
+  /**
+   * selection key of the connection from which the last message was received.
+   */
+  public SelectionKey currKey;
+  /**
+   * identity of this server.
+   */
+  private int identity;
+  private Server server;
 
-	private int identity;
-	private Server server;
+  private SelectionKey electionParentKey;
 
-	private SelectionKey electionParentKey;
+  private int caw = -1;
+  private int parent = -1;
+  private int win = -1;
+  private int rec = 0;
+  private int lrec = 0;
+  private String status = "dormant";
+  
+  public int getCaw() {
+    return caw;
+  }
 
-	private int caw = -1;
-	private int parent = -1;
-	private int win = -1;
-	private int rec = 0;
-	private int lrec = 0;
-	private String status = "dormant";
+  public void setCaw(int caw) {
+    this.caw = caw;
+  }
 
-	public int getCaw() {
-		return caw;
-	}
+  public int getParent() {
+    return parent;
+  }
 
-	public void setCaw(int caw) {
-		this.caw = caw;
-	}
+  public void setParent(int parent) {
+    this.parent = parent;
+  }
 
-	public int getParent() {
-		return parent;
-	}
+  public int getWin() {
+    return win;
+  }
 
-	public void setParent(int parent) {
-		this.parent = parent;
-	}
+  public void setWin(int win) {
+    this.win = win;
+  }
 
-	public int getWin() {
-		return win;
-	}
+  public int getRec() {
+    return rec;
+  }
 
-	public void setWin(int win) {
-		this.win = win;
-	}
+  public void setRec(int rec) {
+    this.rec = rec;
+  }
 
-	public int getRec() {
-		return rec;
-	}
+  public int getLrec() {
+    return lrec;
+  }
 
-	public void setRec(int rec) {
-		this.rec = rec;
-	}
+  public void setLrec(int lrec) {
+    this.lrec = lrec;
+  }
 
-	public int getLrec() {
-		return lrec;
-	}
+  public String getStatus() {
+    return status;
+  }
 
-	public void setLrec(int lrec) {
-		this.lrec = lrec;
-	}
+  public void setStatus(String status) {
+    this.status = status;
+  }
 
-	public String getStatus() {
-		return status;
-	}
+  /**
+   * one counter per client in order to control the propagation of client messages: stop forward to
+   * remote servers when the message has already been forwarded ; the counter is set by the server
+   * receiving the message from the client.
+   */
+  public Map<Integer, Integer> clientSeqNumbers;
+  /**
+   * seqNumber is equal to the maximum of counters of clientSeqNumbers set.
+   */
+  public int seqNumber;
 
-	public void setStatus(String status) {
-		this.status = status;
-	}
+  /**
+   * initialises the collection attributes.
+   *
+   * @param identity
+   *          the identity of this server.
+   * @param
+   *      the server
+   */
+  public State(final int identity,final  Server serv) {
+    this.identity = identity;
+    allServerWorkers = new HashMap<>();
+    allClientWorkers = new HashMap<>();
+    clientSeqNumbers = new HashMap<>();
+    this.setServer(serv);
+    assert invariant();
+  }
 
-	/**
-	 * one counter per client in order to control the propagation of client
-	 * messages: stop forward to remote servers when the message has already
-	 * been forwarded ; the counter is set by the server receiving the message
-	 * from the client.
-	 */
-	public Map<Integer, Integer> clientSeqNumbers;
-	/**
-	 * seqNumber is equal to the maximum of counters of clientSeqNumbers set.
-	 */
-	public int seqNumber;
+  /**
+   * checks the invariant of the class.
+   *
+   * @return a boolean stating whether the invariant is maintained.
+   */
+  public boolean invariant() {
+    return allServerWorkers != null
+        && allClientWorkers != null && clientSeqNumbers != null;
+  }
 
-	/**
-	 * initialises the collection attributes.
-	 * 
-	 * @param identity
-	 *            the identity of this server.
-	 */
-	public State(final int identity, Server serv) {
-		this.identity = identity;
-		allServerWorkers = new HashMap<>();
-		allClientWorkers = new HashMap<>();
-		clientSeqNumbers = new HashMap<>();
-		this.setServer(serv);
-		assert invariant();
-	}
+  /**
+   * gets the identity of the server.
+   *
+   * @return the identity of the server.
+   */
+  public int getIdentity() {
+    return identity;
+  }
 
-	/**
-	 * checks the invariant of the class.
-	 * 
-	 * @return a boolean stating whether the invariant is maintained.
-	 */
-	public boolean invariant() {
-		return allServerWorkers != null && allClientWorkers != null && clientSeqNumbers != null;
-	}
+  public SelectionKey getElectionParentKey() {
 
-	/**
-	 * gets the identity of the server.
-	 * 
-	 * @return the identity of the server.
-	 */
-	public int getIdentity() {
-		return identity;
-	}
+    return electionParentKey;
+  }
 
-	public SelectionKey getElectionParentKey() {
+  public void setElectionParentKey(SelectionKey electionParentKey) {
+    this.electionParentKey = electionParentKey;
+  }
 
-		return electionParentKey;
-	}
+  public Server getServer() {
+    return server;
+  }
 
-	public void setElectionParentKey(SelectionKey electionParentKey) {
-		this.electionParentKey = electionParentKey;
-	}
-
-	public Server getServer() {
-		return server;
-	}
-
-	public void setServer(Server server) {
-		this.server = server;
-	}
+  public void setServer(Server server) {
+    this.server = server;
+  }
 }

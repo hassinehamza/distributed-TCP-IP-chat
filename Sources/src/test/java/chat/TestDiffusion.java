@@ -16,34 +16,32 @@ import chat.server.Server;
 
 public class TestDiffusion extends Scenario {
 
-	@Test
+	private static final int WAIT = 500;
+
+  @Test
 	@Override
 	public void constructAndRun() throws Exception {
-		// TODO Auto-generated method stub
+	  
 		Log.configureALogger(LOGGER_NAME_TEST, Level.INFO);
 
 		Server s0 = instanciateAServer("0");
-		sleep(500);
-		// Server s1 = instanciateAServer("1 localhost 0");
-		// sleep(500);
-		// Interceptor.setInterceptionEnabled(true);
-		// sleep(500);
+		sleep(WAIT);
 		Client c0 = instanciateAClient(2050);
-		sleep(500);
+		sleep(WAIT);
 		Client c1 = instanciateAClient(2050);
-		sleep(500);
+		sleep(WAIT);
 		Client c2 = instanciateAClient(2050);
-		sleep(1000);
+		sleep(2* WAIT);
 		if (LOG_ON && TEST.isInfoEnabled()) {
 			TEST.info("starting the test of the diffusion algorithm...");
 		}
 
 		Interceptor.setInterceptionEnabled(true);
 		emulateAnInputLineFromTheConsoleForAClient(c0, "message 1 from 0");
-		sleep(100);
+		sleep(WAIT);
 		Interceptor.setInterceptionEnabled(false);
 		emulateAnInputLineFromTheConsoleForAClient(c1, "message 2 from 1");
-		sleep(500);
+		sleep(WAIT);
 		if (LOG_ON && TEST.isInfoEnabled()) {
 			TEST.info("end of the scenario.");
 		}
@@ -53,17 +51,16 @@ public class TestDiffusion extends Scenario {
 		Assert.assertEquals(c2.getState().MsgBag.size(), 0);
 
 		emulateAnInputLineFromTheConsoleForAServer(s0, "quit");
-		sleep(100);
+		sleep(WAIT);
 		// finish properly
 		emulateAnInputLineFromTheConsoleForAClient(c0, "quit");
-		sleep(100);
+		sleep(WAIT);
 		emulateAnInputLineFromTheConsoleForAClient(c1, "quit");
-		sleep(100);
+		sleep(WAIT);
 		emulateAnInputLineFromTheConsoleForAClient(c2, "quit");
-		sleep(100);
+		sleep(WAIT);
 
-		// emulateAnInputLineFromTheConsoleForAServer(s1, "quit");
-		sleep(1000);
+		sleep(WAIT);
 
 	}
 
