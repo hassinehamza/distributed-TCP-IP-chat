@@ -24,17 +24,27 @@ In this Project :
 __we will try this topology:__ 
 
 PS: when starting a server <i> , its default port will be 2050+i;
+
 in order to conect a server to a server , we should mention the host and the Id of the server.
+
 in order to connect a client to a server , we have to mention the server host and port . 
 
 
+
 ./serveur.sh 1
+
 ./client.sh localhost 2051
+
 ./serveur 2 localhost 1
+
 ./client.sh localhost 2052
+
 ./serveur 3 localhost 1
+
 ./client.sh localhost 2053
+
 ./client.sh localhost 2053
+
 
 ```
 client--------server(1)------server(2)------client 
